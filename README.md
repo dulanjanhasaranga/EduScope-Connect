@@ -1,1 +1,1 @@
-# EduScope-Connect
+# EduScope - Connect
