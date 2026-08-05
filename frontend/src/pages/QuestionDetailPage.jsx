@@ -1,4 +1,4 @@
-﻿import { User, Award, Edit2, ArrowLeft, CheckCircle, ArrowUp, ArrowDown, Repeat, Forward, Tag, Clock, Trash2, Send, MessageCircle } from "lucide-react";
+import { User, Award, Edit2, ArrowLeft, CheckCircle, ArrowUp, ArrowDown, Repeat, Forward, Tag, Clock, Trash2, Send, MessageCircle, Sparkles } from "lucide-react";
 import SimpleMdeReact from "react-simplemde-editor";
 import ReactMarkdown from "react-markdown";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -40,6 +40,9 @@ export default function QuestionDetailPage() {
   const [submitting, setSubmitting] = useState(false);
   const [editingAnswer, setEditingAnswer] = useState(null);
   const [editBody, setEditBody] = useState('');
+  
+  const [aiSummary, setAiSummary] = useState(null);
+  const [generatingSummary, setGeneratingSummary] = useState(false);
 
   const editorOptionsEdit = useMemo(() => ({ spellChecker: false, maxHeight: '200px' }), []);
   const editorOptionsNew = useMemo(() => ({ spellChecker: false, maxHeight: '300px' }), []);
@@ -221,6 +224,19 @@ export default function QuestionDetailPage() {
     }
   };
 
+  const handleSummarize = async () => {
+    setGeneratingSummary(true);
+    try {
+      const res = await api.post('/ai/summarize', { text: question.body });
+      setAiSummary(res.data.summary);
+      showToast('AI Summary generated!', 'success');
+    } catch (err) {
+      showToast('AI summarization failed: ' + (err.response?.data?.error || err.message), 'error');
+    } finally {
+      setGeneratingSummary(false);
+    }
+  };
+
   if (loading) return <LoadingSpinner size="lg" className="py-12" />;
   if (!question) return null;
 
@@ -292,6 +308,13 @@ export default function QuestionDetailPage() {
                     </span>
                   ))}
                 </div>
+
+                {/* AI Summary Box */}
+                {aiSummary && (
+                  <div className="mt-4 p-4 bg-purple-50 border border-purple-200 rounded-xl">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]} className="text-purple-900 prose prose-purple">{aiSummary}</ReactMarkdown>
+                  </div>
+                )}
               </div>
 
               {/* Quora Style Action Bar for Question */}
@@ -326,6 +349,17 @@ export default function QuestionDetailPage() {
                   <Forward className="w-5 h-5 text-gray-600" />
                   <span className="font-medium text-sm text-gray-600">Share</span>
                 </button>
+
+                <div className="ml-auto">
+                  <button 
+                    onClick={handleSummarize} 
+                    disabled={generatingSummary}
+                    className="flex items-center gap-2 px-3 py-1.5 bg-purple-100 text-purple-700 hover:bg-purple-200 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    {generatingSummary ? 'Summarizing...' : 'Summarize with AI'}
+                  </button>
+                </div>
               </div>
 
             </div>

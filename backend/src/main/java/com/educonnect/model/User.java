@@ -71,6 +71,26 @@ public class User {
     private List<QuestionVote> questionVotes = new ArrayList<>();
 
     public enum Role {
-        STUDENT, ADMIN
+        STUDENT(java.util.Set.of(Permission.USER_READ)),
+        LEADER(java.util.Set.of(Permission.USER_READ, Permission.CONTENT_MODERATE)),
+        ADMIN(java.util.Set.of(Permission.USER_READ, Permission.USER_MANAGE, Permission.LEADER_MANAGE, Permission.CONTENT_MODERATE, Permission.SYSTEM_CONFIG, Permission.AUDIT_READ));
+
+        private final java.util.Set<Permission> permissions;
+
+        Role(java.util.Set<Permission> permissions) {
+            this.permissions = permissions;
+        }
+
+        public java.util.Set<Permission> getPermissions() {
+            return permissions;
+        }
+
+        public java.util.List<org.springframework.security.core.authority.SimpleGrantedAuthority> getAuthorities() {
+            var authorities = new java.util.ArrayList<>(getPermissions().stream()
+                    .map(permission -> new org.springframework.security.core.authority.SimpleGrantedAuthority(permission.getPermission()))
+                    .toList());
+            authorities.add(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + this.name()));
+            return authorities;
+        }
     }
 }

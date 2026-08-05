@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/admin/ecosystem")
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasAuthority('system:config')")
 public class AdminEcosystemController {
 
     @Autowired

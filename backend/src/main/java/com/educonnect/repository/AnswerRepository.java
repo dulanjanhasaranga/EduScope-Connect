@@ -17,7 +17,11 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
 
     List<Answer> findByQuestionIdOrderByVoteCountDescCreatedAtDesc(Long questionId);
 
+    List<Answer> findByAuthor(User author);
+
     List<Answer> findByAuthorIdOrderByCreatedAtDesc(Long authorId);
+
+    long countByAuthor(User author);
 
     long countByAuthorId(Long authorId);
 }

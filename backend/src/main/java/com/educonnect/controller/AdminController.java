@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/admin")
-@PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
 
     @Autowired
@@ -28,6 +27,7 @@ public class AdminController {
 
     // Users
     @GetMapping("/users")
+    @PreAuthorize("hasAnyAuthority('user:manage', 'leader:manage')")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         List<UserDTO> users = userRepository.findAll().stream()
                 .map(this::mapUserToDTO)
@@ -36,6 +36,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/users/{id}")
+    @PreAuthorize("hasAuthority('user:manage')")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         if (!userRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
@@ -45,6 +46,7 @@ public class AdminController {
     }
     
     @PatchMapping("/users/{id}/role")
+    @PreAuthorize("hasAuthority('user:manage')")
     public ResponseEntity<Void> toggleUserRole(@PathVariable Long id, @RequestParam String role) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         user.setRole(User.Role.valueOf(role.toUpperCase()));
@@ -54,6 +56,7 @@ public class AdminController {
 
     // Questions
     @GetMapping("/questions")
+    @PreAuthorize("hasAuthority('content:moderate')")
     public ResponseEntity<List<QuestionDTO>> getAllQuestions() {
         List<QuestionDTO> questions = questionRepository.findAll().stream()
                 .map(this::mapQuestionToDTO)
@@ -62,6 +65,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/questions/{id}")
+    @PreAuthorize("hasAuthority('content:moderate')")
     public ResponseEntity<Void> deleteQuestion(@PathVariable Long id) {
         if (!questionRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
@@ -72,6 +76,7 @@ public class AdminController {
 
     // Answers
     @DeleteMapping("/answers/{id}")
+    @PreAuthorize("hasAuthority('content:moderate')")
     public ResponseEntity<Void> deleteAnswer(@PathVariable Long id) {
         if (!answerRepository.existsById(id)) {
             return ResponseEntity.notFound().build();

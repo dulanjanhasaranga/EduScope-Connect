@@ -1,4 +1,4 @@
-﻿package com.educonnect.config;
+package com.educonnect.config;
 
 import com.educonnect.model.EcosystemProduct;
 import com.educonnect.model.Tag;
@@ -81,7 +81,7 @@ public class DataSeeder implements CommandLineRunner {
                             .username("Dr. Sarah Chen")
                             .email("sarah.chen@university.edu")
                             .passwordHash(passwordEncoder.encode("password123"))
-                            .role(User.Role.STUDENT)
+                            .role(User.Role.LEADER)
                             .bio("Professor of Computer Science specializing in AI and Machine Learning.")
                             .avatarUrl(
                                     "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&h=150&fit=crop&q=80")
@@ -91,7 +91,7 @@ public class DataSeeder implements CommandLineRunner {
                             .username("Prof. M. Johnson")
                             .email("mjohnson@institute.org")
                             .passwordHash(passwordEncoder.encode("password123"))
-                            .role(User.Role.STUDENT)
+                            .role(User.Role.LEADER)
                             .bio("Department Head of Applied Mathematics. Passionate about helping students understand calculus.")
                             .avatarUrl(
                                     "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop&q=80")

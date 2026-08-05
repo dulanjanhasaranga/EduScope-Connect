@@ -1,14 +1,11 @@
-import { Linkedin, Facebook, Youtube, Phone, Mail, Sparkles, Bell, Menu } from "lucide-react";
-import { BookOpen, User, Award, MessageCircle, HelpCircle, X, ShieldCheck, LogOut } from "lucide-react";
+import { Linkedin, Facebook, Youtube, Phone, Mail, Sparkles, Bell, Menu, Grip, Pill } from "lucide-react";
+import { BookOpen, User, Award, MessageCircle, HelpCircle, X, ShieldCheck, LogOut, CheckSquare, BarChart3, Users2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
-import React from "react";
-
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useWebSocket } from '../context/WebSocketContext';
-
-import { useState, useEffect, useRef } from 'react';
 
 export default function Navbar() {
   const { user, logout, isAuthenticated } = useAuth();
@@ -17,10 +14,13 @@ export default function Navbar() {
   const location = useLocation();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showAppsMenu, setShowAppsMenu] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [toasts, setToasts] = useState([]);
+  
   const notifRef = useRef(null);
   const profileRef = useRef(null);
+  const appsRef = useRef(null);
   const mobileMenuRef = useRef(null);
 
   useEffect(() => {
@@ -39,12 +39,9 @@ export default function Navbar() {
   // Close dropdowns on outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (notifRef.current && !notifRef.current.contains(e.target)) {
-        setShowNotifications(false);
-      }
-      if (profileRef.current && !profileRef.current.contains(e.target)) {
-        setShowProfileMenu(false);
-      }
+      if (notifRef.current && !notifRef.current.contains(e.target)) setShowNotifications(false);
+      if (profileRef.current && !profileRef.current.contains(e.target)) setShowProfileMenu(false);
+      if (appsRef.current && !appsRef.current.contains(e.target)) setShowAppsMenu(false);
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -57,8 +54,7 @@ export default function Navbar() {
 
   const handleLogout = () => {
     logout();
-    // Stay on current browsable page or go to questions
-    const publicPages = ['/questions', '/leaderboard', '/resources'];
+    const publicPages = ['/questions', '/leaderboard'];
     const isOnPublicPage = publicPages.some(p => location.pathname.startsWith(p)) || location.pathname.startsWith('/question/');
     navigate(isOnPublicPage ? location.pathname : '/questions');
   };
@@ -77,79 +73,88 @@ export default function Navbar() {
 
   const redirectToLogin = (from) => `/login?redirect=${encodeURIComponent(from || location.pathname)}`;
 
-  return (
-    <nav className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50 transition-all">
-      {/* Top Header */}
-      <div className="bg-gray-100 border-b border-gray-200 hidden md:block">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-10 text-sm text-gray-600">
-            <div className="flex items-center gap-6">
-              <a href="tel:+18666973314" className="flex items-center gap-2 hover:text-primary-600 transition-colors">
-                <Phone className="h-4 w-4" />
-                <span>+1-866-697-3314</span>
-              </a>
-              <a href="mailto:info@eduscopeglobal.com" className="flex items-center gap-2 hover:text-primary-600 transition-colors">
-                <Mail className="h-4 w-4" />
-                <span>info@eduscopeglobal.com</span>
-              </a>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="font-medium">Follow Us:</span>
-              <div className="flex items-center gap-3">
-                <a href="#" className="text-gray-500 hover:text-[#0077b5] transition-colors"><Linkedin className="h-4 w-4" /></a>
-                <a href="#" className="text-gray-500 hover:text-[#1877f2] transition-colors"><Facebook className="h-4 w-4" /></a>
-                <a href="#" className="text-gray-500 hover:text-[#ff0000] transition-colors"><Youtube className="h-4 w-4" /></a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+  const ecosystemApps = [
+    { name: 'Bevinzey', icon: Sparkles, color: 'text-purple-600', bg: 'bg-purple-100', path: '/resources' },
+    { name: 'Evalometrics', icon: CheckSquare, color: 'text-emerald-600', bg: 'bg-emerald-100', path: '/assessments' },
+    { name: 'FacultyLens', icon: BarChart3, color: 'text-blue-600', bg: 'bg-blue-100', path: '/leader' },
+    { name: 'StudySocius', icon: Users2, color: 'text-orange-600', bg: 'bg-orange-100', path: '/groups' },
+    { name: 'RxCalculations', icon: Pill, color: 'text-red-600', bg: 'bg-red-100', path: '/rxcalculations' },
+  ];
 
-      {/* Main Navbar */}
+  return (
+    <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 transition-all shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
+        <div className="flex justify-between items-center h-16">
           <div className="flex items-center gap-8">
-            <Link to="/" className="flex items-center gap-2">
-              <BookOpen className="h-8 w-8 text-primary-600" />
-              <span className="text-xl font-bold text-gray-900">Eduscope Connect</span>
+            <Link to="/" className="flex items-center gap-2 group">
+              <BookOpen className="h-8 w-8 text-primary-600 group-hover:scale-105 transition-transform" />
+              <span className="text-xl font-bold text-gray-900 tracking-tight">EduConnect</span>
             </Link>
 
             {/* Desktop Nav Links */}
-            <div className="hidden md:flex items-center gap-6">
+            <div className="hidden md:flex items-center gap-6 ml-4">
               <Link to="/questions" className={navLinkClass('/questions')} id="nav-questions">
-                <HelpCircle className="h-4 w-4" />
                 Questions
               </Link>
               <Link to="/leaderboard" className={navLinkClass('/leaderboard')} id="nav-leaderboard">
-                <Award className="h-4 w-4" />
                 Leaderboard
-              </Link>
-              <Link to="/resources" className={navLinkClass('/resources')} id="nav-resources">
-                <Sparkles className="h-4 w-4" />
-                Resources
               </Link>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
+            
+            {/* Google-Style App Launcher (Ecosystem Menu) */}
+            <div className="relative" ref={appsRef}>
+              <button 
+                onClick={() => setShowAppsMenu(!showAppsMenu)}
+                className="p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
+                title="EduScope Ecosystem"
+              >
+                <Grip className="h-5 w-5" />
+              </button>
+
+              {showAppsMenu && (
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-gray-200 p-4 z-50 animate-fade-in">
+                  <div className="grid grid-cols-3 gap-4">
+                    {ecosystemApps.map((app) => (
+                      <Link 
+                        key={app.name} 
+                        to={app.path}
+                        onClick={() => setShowAppsMenu(false)}
+                        className="flex flex-col items-center gap-2 p-3 hover:bg-gray-50 rounded-xl transition-colors text-center group"
+                      >
+                        <div className={`w-12 h-12 flex items-center justify-center rounded-xl ${app.bg} group-hover:scale-110 transition-transform`}>
+                          <app.icon className={`h-6 w-6 ${app.color}`} />
+                        </div>
+                        <span className="text-xs font-medium text-gray-700">{app.name}</span>
+                      </Link>
+                    ))}
+                  </div>
+                  <div className="mt-4 pt-4 border-t border-gray-100 text-center">
+                    <Link to="/ecosystem" className="text-sm font-medium text-primary-600 hover:underline" onClick={() => setShowAppsMenu(false)}>
+                      View All Apps
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+
             {isAuthenticated ? (
               <>
                 {/* Notifications */}
                 <div className="relative" ref={notifRef}>
                   <button
                     onClick={() => setShowNotifications(!showNotifications)}
-                    className="relative p-2 text-gray-600 hover:text-primary-600 transition-colors"
-                    id="nav-notifications-btn"
+                    className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
                   >
                     <Bell className="h-5 w-5" />
                     {notifications.length > 0 && (
-                      <span className="absolute top-0 right-0 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                        {notifications.length}
-                      </span>
+                      <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
                     )}
                   </button>
                   {showNotifications && (
-                    <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                    <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 animate-fade-in">
                       <div className="px-4 py-2 border-b border-gray-100 flex justify-between items-center">
                         <span className="font-medium">Notifications</span>
                         <button onClick={clearNotifications} className="text-sm text-primary-600 hover:underline">
@@ -169,60 +174,48 @@ export default function Navbar() {
                   )}
                 </div>
 
-                {/* Ask Question - Authenticated */}
-                <Link to="/ask" className="btn-primary hidden sm:flex items-center gap-2" id="nav-ask-question">
-                  <MessageCircle className="h-4 w-4" />
-                  Ask Question
-                </Link>
-
                 {/* Profile Dropdown */}
                 <div className="relative" ref={profileRef}>
                   <button 
                     onClick={() => setShowProfileMenu(!showProfileMenu)}
-                    className="flex items-center gap-2 text-gray-700 hover:text-primary-600 transition-colors" 
-                    id="nav-profile-btn"
+                    className="flex items-center gap-2 p-1 hover:bg-gray-100 rounded-full transition-colors" 
                   >
-                    <div className="flex items-center gap-1 bg-primary-50 px-3 py-1.5 rounded-full">
-                      <Award className="h-4 w-4 text-primary-600" />
-                      <span className="text-sm font-medium text-primary-700">{user?.reputationScore || 0}</span>
+                    <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center text-primary-700 font-bold">
+                      {user?.username?.charAt(0).toUpperCase()}
                     </div>
-                    <User className="h-5 w-5" />
-                    <span className="hidden sm:inline text-sm font-medium">{user?.username}</span>
                   </button>
 
                   {showProfileMenu && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 animate-fade-in">
-                      <div className="px-4 py-2 border-b border-gray-100 mb-1">
-                        <p className="text-sm font-medium text-gray-900 truncate">{user?.email}</p>
+                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50 animate-fade-in">
+                      <div className="px-4 py-3 border-b border-gray-100 mb-1 flex items-center gap-3">
+                        <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center text-primary-700 font-bold text-lg">
+                           {user?.username?.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="overflow-hidden">
+                          <p className="text-sm font-bold text-gray-900 truncate">{user?.username}</p>
+                          <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                        </div>
                       </div>
                       
-                      <Link 
-                        to="/profile" 
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                        onClick={() => setShowProfileMenu(false)}
-                      >
-                        <User className="h-4 w-4" /> My Profile
+                      <Link to="/profile" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50" onClick={() => setShowProfileMenu(false)}>
+                        <User className="h-4 w-4 text-gray-400" /> My Profile
                       </Link>
+
+                      {(user?.role === 'ADMIN' || user?.role === 'LEADER') && (
+                        <Link to="/leader" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50" onClick={() => setShowProfileMenu(false)}>
+                          <BarChart3 className="h-4 w-4 text-gray-400" /> Leader Dashboard
+                        </Link>
+                      )}
                       
                       {user?.role === 'ADMIN' && (
-                        <Link 
-                          to="/admin" 
-                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                          onClick={() => setShowProfileMenu(false)}
-                        >
-                          <ShieldCheck className="h-4 w-4" /> Admin Dashboard
+                        <Link to="/admin" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50" onClick={() => setShowProfileMenu(false)}>
+                          <ShieldCheck className="h-4 w-4 text-gray-400" /> Admin Settings
                         </Link>
                       )}
                       
                       <div className="border-t border-gray-100 mt-1 pt-1">
-                        <button
-                          onClick={() => {
-                            setShowProfileMenu(false);
-                            handleLogout();
-                          }}
-                          className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                        >
-                          <LogOut className="h-4 w-4" /> Logout
+                        <button onClick={() => { setShowProfileMenu(false); handleLogout(); }} className="flex items-center gap-3 w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                          <LogOut className="h-4 w-4 text-gray-400" /> Sign out
                         </button>
                       </div>
                     </div>
@@ -230,33 +223,22 @@ export default function Navbar() {
                 </div>
               </>
             ) : (
-              <>
-                {/* Ask Question - Unauthenticated (redirects to login) */}
-                <Link 
-                  to={redirectToLogin('/ask')} 
-                  className="btn-primary hidden sm:flex items-center gap-2"
-                  id="nav-ask-question-guest"
-                >
-                  <MessageCircle className="h-4 w-4" />
-                  Ask Question
+              <div className="hidden sm:flex items-center gap-3">
+                <Link to="/login" className="text-gray-600 hover:text-gray-900 font-medium transition-colors text-sm px-2">
+                  Sign in
                 </Link>
-
-                <Link to="/login" className="text-gray-700 hover:text-primary-600 font-medium transition-colors" id="nav-login">
-                  Log In
+                <Link to="/register" className="btn-primary text-sm py-2 px-4 rounded-full shadow-sm">
+                  Get Started
                 </Link>
-                <Link to="/register" className="btn-primary" id="nav-signup">
-                  Sign Up
-                </Link>
-              </>
+              </div>
             )}
 
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-gray-600 hover:text-primary-600 transition-colors"
-              id="nav-mobile-menu-btn"
+              className="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors ml-1"
             >
-              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
         </div>
@@ -264,87 +246,29 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-gray-200 bg-white/95 backdrop-blur-md animate-slide-down" ref={mobileMenuRef}>
-          <div className="px-4 py-4 space-y-2">
-            <Link
-              to="/questions"
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                isActive('/questions') ? 'bg-primary-50 text-primary-600' : 'text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              <HelpCircle className="h-5 w-5" />
-              <span className="font-medium">Questions</span>
+        <div className="md:hidden border-t border-gray-200 bg-white" ref={mobileMenuRef}>
+          <div className="px-4 py-2 space-y-1">
+            <Link to="/questions" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-50 font-medium">
+              <HelpCircle className="h-5 w-5 text-gray-400" /> Questions
             </Link>
-            <Link
-              to="/leaderboard"
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                isActive('/leaderboard') ? 'bg-primary-50 text-primary-600' : 'text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              <Award className="h-5 w-5" />
-              <span className="font-medium">Leaderboard</span>
+            <Link to="/leaderboard" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-50 font-medium">
+              <Award className="h-5 w-5 text-gray-400" /> Leaderboard
             </Link>
-            <Link
-              to="/resources"
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                isActive('/resources') ? 'bg-primary-50 text-primary-600' : 'text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              <Sparkles className="h-5 w-5" />
-              <span className="font-medium">Resources</span>
-            </Link>
+            
+            <div className="pt-4 pb-2">
+              <p className="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Ecosystem Apps</p>
+              {ecosystemApps.map(app => (
+                <Link key={app.name} to={app.path} className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-gray-700 hover:bg-gray-50">
+                  <app.icon className={`h-5 w-5 ${app.color}`} /> {app.name}
+                </Link>
+              ))}
+            </div>
 
-            {isAuthenticated ? (
-              <>
-                <Link
-                  to="/ask"
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-                >
-                  <MessageCircle className="h-5 w-5" />
-                  <span className="font-medium">Ask Question</span>
-                </Link>
-                <Link
-                  to="/profile"
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-                >
-                  <User className="h-5 w-5" />
-                  <span className="font-medium">Profile</span>
-                </Link>
-                {user?.role === 'ADMIN' && (
-                  <Link
-                    to="/admin"
-                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
-                  >
-                    <ShieldCheck className="h-5 w-5" />
-                    <span className="font-medium">Admin Dashboard</span>
-                  </Link>
-                )}
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-colors w-full text-left"
-                >
-                  <LogOut className="h-5 w-5" />
-                  <span className="font-medium">Logout</span>
-                </button>
-              </>
-            ) : (
-              <>
-                <Link
-                  to={redirectToLogin('/ask')}
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-                >
-                  <MessageCircle className="h-5 w-5" />
-                  <span className="font-medium">Ask Question</span>
-                </Link>
-                <div className="pt-2 border-t border-gray-100 mt-2 flex gap-3">
-                  <Link to="/login" className="flex-1 btn-secondary text-center py-3">
-                    Log In
-                  </Link>
-                  <Link to="/register" className="flex-1 btn-primary text-center py-3">
-                    Sign Up
-                  </Link>
-                </div>
-              </>
+            {!isAuthenticated && (
+              <div className="pt-4 border-t border-gray-100 mt-2 flex flex-col gap-2">
+                <Link to="/login" className="btn-secondary text-center py-2.5 rounded-xl">Sign in</Link>
+                <Link to="/register" className="btn-primary text-center py-2.5 rounded-xl">Get Started</Link>
+              </div>
             )}
           </div>
         </div>
@@ -353,12 +277,9 @@ export default function Navbar() {
       {/* Toast notifications */}
       <div className="fixed top-20 right-4 z-50 space-y-2">
         {toasts.map((toast) => (
-          <div
-            key={toast.id}
-            className="bg-primary-600 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-fade-in"
-          >
-            <Bell className="h-4 w-4" />
-            <span className="text-sm">{toast.message}</span>
+          <div key={toast.id} className="bg-gray-900 text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 animate-fade-in text-sm font-medium">
+            <Bell className="h-4 w-4 text-gray-400" />
+            {toast.message}
           </div>
         ))}
       </div>
