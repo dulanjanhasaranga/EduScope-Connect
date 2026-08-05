@@ -1,84 +1,132 @@
-# Eduscope Connect - Collaborative Study & Doubt-Clearing Portal
+<div align="center">
+  <img src="https://img.icons8.com/color/96/000000/graduation-cap.png" alt="EduScope Logo" width="80" />
+  
+  # EduScope Connect
 
-Eduscope Connect is a premier, full-stack educational technology platform where students, educators, and institutions converge to share knowledge, discover opportunities, and build reputation. The platform is designed to provide intelligent solutions for modern learning through community-driven Q&A, an advanced technology ecosystem showcase, and gamified reputation systems.
+  **A modern, community-driven Q&A and collaborative learning ecosystem.**
 
-## 🚀 Features
+  [![React](https://img.shields.io/badge/React-18.x-blue.svg?style=flat-square&logo=react)](https://reactjs.org/)
+  [![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.2-brightgreen.svg?style=flat-square&logo=spring)](https://spring.io/projects/spring-boot)
+  [![MySQL](https://img.shields.io/badge/MySQL-8.0-orange.svg?style=flat-square&logo=mysql)](https://www.mysql.com/)
+  [![TailwindCSS](https://img.shields.io/badge/Tailwind-3.x-38B2AC.svg?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
+  [![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
 
-* **Community-Driven Q&A:** Post academic questions, write answers, and utilize rich-text formatting (Markdown) with tags and categories.
-* **Reputation System:** Gamified user experience where users earn points for getting upvoted, having answers accepted, and providing high-quality contributions. Includes a fully-featured Leaderboard with rank tiers (Legend, Expert, Mentor, etc.).
-* **Ecosystem Showcase:** An elegant product showcase page displaying our suite of AI-powered educational technology platforms with category filtering and interactive modals.
-* **Waitlist Management:** Integrated waitlist signup flow for upcoming products within the ecosystem.
-* **Admin Dashboard:** A secured area to manage ecosystem products, tag hierarchies, and handle administrative tasks.
-* **Real-time Updates:** Instant UI feedback and live polling for upvotes via WebSockets.
+  <p align="center">
+    <a href="#features">Features</a> •
+    <a href="#tech-stack">Tech Stack</a> •
+    <a href="#getting-started">Getting Started</a> •
+    <a href="#environment-variables">Environment Variables</a> •
+    <a href="#contributing">Contributing</a>
+  </p>
+</div>
 
-## 🛠️ Tech Stack
+---
 
-**Frontend:**
-* **React 18** with Vite
-* **Tailwind CSS** for modern, responsive, utility-first styling
-* **Framer Motion** for fluid animations and page transitions
-* **React Router DOM** for client-side routing
-* **Lucide React** for crisp, scalable iconography
-* **React SimpleMDE** for Markdown editing
-* **STOMP.js + SockJS** for WebSocket communication
+## 📖 About The Project
 
-**Backend:**
-* **Spring Boot 3.2** (Java 17)
-* **Spring Security** with JWT Authentication
-* **Spring Data JPA** & Hibernate
-* **MySQL** with auto-configuration
-* **Maven** for build management
-* **BCrypt** for password hashing
+EduScope Connect is a premium, full-stack educational technology platform where students, educators, and institutions converge to share knowledge, discover opportunities, and build their academic reputation. 
 
-## 📋 Prerequisites
+Inspired by top-tier community forums like Quora and StackOverflow, the platform is designed to provide intelligent solutions for modern learning through community-driven Q&A, real-time collaboration, and a gamified reputation system.
+
+## ✨ Features
+
+- 💬 **Community-Driven Q&A:** Ask questions, write detailed answers using a rich Markdown editor, and categorize knowledge using hierarchical tags.
+- 🏆 **Gamified Reputation System:** Users earn points for upvotes, accepted answers, and high-quality contributions. Climb the Leaderboard through dynamic rank tiers (Legend, Expert, Mentor).
+- 🚀 **Ecosystem Showcase:** An elegant product showcase page displaying a suite of AI-powered educational technology tools with category filtering.
+- ⚡ **Real-Time Collaboration:** Experience instant UI updates and live vote polling powered by WebSockets (STOMP/SockJS).
+- 📱 **Fully Responsive UI:** A modern, Quora-style layout meticulously designed with Tailwind CSS and Framer Motion for a fluid, mobile-first experience.
+- 🛡️ **Admin Dashboard:** Secure administrative panel to manage users, control ecosystem products, and moderate platform content.
+
+## 💻 Tech Stack
+
+### Frontend
+- **React 18** (Vite)
+- **Tailwind CSS** (Utility-first styling)
+- **Framer Motion** (Fluid animations)
+- **React Router DOM** (Client-side routing)
+- **Lucide React** (Crisp iconography)
+- **React SimpleMDE / React Markdown** (Rich text editing)
+
+### Backend
+- **Spring Boot 3.2** (Java 17)
+- **Spring Security & JWT** (Stateless authentication)
+- **Spring Data JPA / Hibernate** (ORM)
+- **MySQL** (Relational Database)
+- **WebSockets** (STOMP messaging)
+
+---
+
+## 🚀 Getting Started
+
+Follow these instructions to get a copy of the project up and running on your local machine for development and testing purposes.
+
+### Prerequisites
 
 Before you begin, ensure you have the following installed:
-* **Node.js** (v18 or higher)
+* **Node.js** (v18 or higher) & **npm**
 * **Java Development Kit (JDK)** 17 or higher
-* **MySQL 8.0+**
-* **Maven 3.8+**
-
-## 🔧 Installation & Setup
+* **MySQL** 8.0+
+* **Maven** 3.8+
 
 ### 1. Database Setup
 
-Start MySQL and create the database (or let auto-creation handle it):
+Start your MySQL server and create the database:
 ```sql
 CREATE DATABASE IF NOT EXISTS educonnect;
-CREATE USER IF NOT EXISTS 'root'@'localhost' IDENTIFIED BY 'root';
+CREATE USER IF NOT EXISTS 'root'@'localhost' IDENTIFIED BY 'your_password';
 GRANT ALL PRIVILEGES ON educonnect.* TO 'root'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-### 2. Backend Setup
+### 2. Environment Variables
+
+Create `.env` files to securely store your credentials.
+
+**Backend (`backend/src/main/resources/application.properties`):**
+Replace hardcoded credentials with environment variables on your system, or update the `application.properties` to match your local database credentials.
+
+**Frontend (`frontend/.env`):**
+Create a `.env` file in the `frontend` directory:
+```env
+VITE_API_BASE_URL=http://localhost:8080
+```
+
+### 3. Running the Backend
+
 Navigate to the `backend` directory and start the Spring Boot server:
 ```bash
 cd backend
 mvn clean install
 mvn spring-boot:run
 ```
-*The backend server will start on `http://localhost:8080`.*
-*(Note: A `DataSeeder` is included which automatically populates the database with initial users, products, and tags on startup for easy testing).*
+> **Note:** The backend includes a `DataSeeder` that will automatically populate the database with tags, ecosystem products, and default users (if not running in the `prod` profile).
 
-### 3. Frontend Setup
+### 4. Running the Frontend
+
 Open a new terminal window, navigate to the `frontend` directory, and start the Vite development server:
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-*The frontend application will be available at `http://localhost:5173`.*
+The application will be available at `http://localhost:5173`.
 
-## 🔒 Default Accounts (For Testing)
+---
 
-The database is seeded with a few default accounts you can use to log in immediately:
-* **Admin Account:** `admin@eduscope.com` / `password123`
-* **Test User:** `test@example.com` / `password123`
+## 🔐 Default Test Accounts
+
+If the `DataSeeder` runs successfully, you can log in immediately with these default accounts:
+
+| Role | Email | Password |
+| :--- | :--- | :--- |
+| **Admin** | `admin@eduscope.com` | `admin123` |
+| **Professor** | `sarah.chen@university.edu` | `password123` |
+
+---
 
 ## 🤝 Contributing
 
-Contributions, issues, and feature requests are welcome!
-Feel free to check the [issues page](https://github.com/yourusername/educonnect/issues) if you want to contribute.
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
@@ -88,4 +136,9 @@ Feel free to check the [issues page](https://github.com/yourusername/educonnect/
 
 ## 📝 License
 
-Distributed under the MIT License. This project is built for academic purposes as per the EduConnect SRS document.
+Distributed under the MIT License. See `LICENSE` for more information.
+
+---
+<div align="center">
+  <p>Built with ❤️ for modern education.</p>
+</div>
