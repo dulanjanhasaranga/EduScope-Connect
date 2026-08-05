@@ -1,138 +1,206 @@
-# EduScope Connect: Technical Documentation & Architecture
+<div align="center">
 
-EduScope Connect is a comprehensive, full-stack educational technology platform. It serves as a centralized ecosystem where students, educators, and institutions can collaborate, share knowledge, and build academic reputation through community-driven interactions.
+![Java](https://img.shields.io/badge/Java-17-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)
+![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-5.0-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind%20CSS-3.4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-1.0.0-blue?style=for-the-badge)
 
-This document provides a complete technical overview of the project's architecture, directory structure, module breakdown, and deployment configuration.
+**A full-stack collaborative learning ecosystem and Q&A platform built with Spring Boot and React.**
+
+[Features](#-features) · [Tech Stack](#-tech-stack) · [Getting Started](#-getting-started) · [API Reference](#-api-reference) · [Project Structure](#-project-structure) · [Contributors](#-contributors)
+
+</div>
 
 ---
 
-## 1. System Architecture
+## 📋 About the Project
 
-The application follows a modern decoupled architecture:
-- **Client Tier:** A single-page application (SPA) built with React and Vite. State is managed via React Context and data fetching is handled through Axios with HTTP interceptors for JWT token lifecycle management.
-- **Application Tier:** A RESTful API built on Spring Boot 3.2. It manages business logic, stateless security, and transactional database operations.
-- **Data Tier:** A MySQL relational database managing persistent entities, relationships, and metadata.
-- **Messaging Tier:** WebSockets via STOMP protocol enabling real-time vote count updates and new post notifications.
+**EduScope Connect** is a comprehensive educational technology platform where students, educators, and institutions converge to share knowledge, discover opportunities, and build their academic reputation. Inspired by community forums like Quora and StackOverflow, it serves as a centralized hub for modern learning.
+
+The system supports interactive Q&A, real-time collaboration, and ecosystem product showcasing, ensuring a seamless experience for both learners and educational administrators.
+
+### 🎯 Problem It Solves
+
+- Eliminates fragmented learning by centralizing academic Q&A
+- Provides a platform for real-time peer-to-peer tutoring and doubt clearing
+- Enables educators to build verifiable academic reputation through gamification
+- Automates the curation of educational resources and ecosystem products
+- Streamlines the management of academic tags and taxonomies
 
 ---
 
-## 2. Directory Structure
+## ✨ Features
 
-The repository is partitioned into two independent applications.
+### 👤 Student / User Features
+| Feature | Description |
+|---------|-------------|
+| **User Registration & Login** | Secure account creation and JWT-based authentication |
+| **Browse Questions** | Explore community questions with tags, categories, and real-time vote counts |
+| **Ask Questions** | Post academic questions using a rich Markdown editor |
+| **Provide Answers** | Write detailed answers with code snippets and image support |
+| **Reputation System** | Earn points dynamically for upvotes and accepted answers |
+| **Ecosystem Discovery** | Browse AI-powered educational tools via the product showcase |
+| **Profile Management** | Update personal information, bio, and track earned ranks (e.g., Expert, Legend) |
 
-### Backend Structure (`/backend`)
-The backend is structured by feature components following standard Spring MVC patterns.
+### 👨‍🏫 Educator Features
+| Feature | Description |
+|---------|-------------|
+| **Knowledge Sharing** | Answer complex questions to build platform reputation |
+| **Content Moderation** | Highly-ranked users can verify and accept correct answers |
+| **Real-time Collaboration** | Instantaneous UI updates and live polling for upvotes via WebSockets |
+| **Waitlist Enrollment** | Sign up for early access to upcoming ecosystem products |
 
-```text
-backend/src/main/java/com/educonnect/
-├── config/              # Configuration classes (Security, WebSockets, CORS, DataSeeding)
-├── controller/          # REST API Endpoints (Auth, Questions, Ecosystem, Admin)
-├── dto/                 # Data Transfer Objects for API requests/responses
-├── model/               # JPA Entity Definitions (User, Question, Answer, Vote, Tag)
-├── repository/          # Spring Data JPA Interfaces for database access
-├── security/            # JWT Filters, Authentication Providers, UserDetails configuration
-├── service/             # Core Business Logic and transactional boundaries
-└── websocket/           # WebSocket configuration and STOMP event listeners
+### 🔑 Admin Features
+| Feature | Description |
+|---------|-------------|
+| **Admin Dashboard** | Complete platform overview with real-time statistics |
+| **Tag Management** | Create, update, and categorize hierarchical knowledge tags |
+| **Ecosystem Management** | Add, edit, and manage educational products in the showcase |
+| **User Moderation** | Monitor user accounts and handle administrative workflows |
+| **All User Features** | Full access to every community capability |
+
+### ⚙️ Backend Features
+| Feature | Description |
+|---------|-------------|
+| **RESTful API** | Clean REST API architecture for all core entities |
+| **JWT Authentication** | Stateless, token-based security |
+| **WebSocket Integration** | STOMP messaging for real-time feed updates |
+| **Role-Based Access Control** | Method-level security with Spring Security |
+| **Global Exception Handling** | Centralized error responses via `@ControllerAdvice` |
+| **CORS Configuration** | Configurable cross-origin support for Vite client |
+| **Auto Schema Management** | Hibernate DDL auto-update for development |
+| **Sample Data Seeding** | `DataSeeder` populates demo tags, products, and users on first run |
+
+---
+
+## 🛠 Tech Stack
+
+### Backend
+| Technology | Version | Purpose |
+|-----------|---------|---------|
+| **Java** | 17 | Core language |
+| **Spring Boot** | 3.2.0 | Application framework |
+| **Spring Security** | 6.x | Authentication & authorization |
+| **Spring Data JPA** | 3.2.x | Database access & ORM |
+| **Hibernate** | 6.x | JPA implementation |
+| **MySQL** | 8.0+ | Relational database |
+| **WebSockets** | 3.2.0 | Real-time STOMP messaging |
+| **Maven** | 3.8+ | Build tool & dependency management |
+
+### Frontend
+| Technology | Version | Purpose |
+|-----------|---------|---------|
+| **React** | 18.2 | UI framework |
+| **Vite** | 5.0 | Build tool & dev server |
+| **React Router** | 6.20 | Client-side routing |
+| **Tailwind CSS** | 3.4 | Utility-first styling |
+| **Framer Motion** | 10.x | Fluid animations |
+| **React SimpleMDE** | 5.x | Markdown editing |
+| **Axios** | 1.6 | HTTP Client with Interceptors |
+| **Lucide React** | 0.3 | Icon library |
+| **SockJS / STOMP** | Latest | Client-side WebSocket handling |
+
+---
+
+## 🏗 Project Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                     FRONTEND (React)                     │
+│  ┌─────────┐ ┌──────────┐ ┌───────────┐ ┌────────────┐ │
+│  │  Pages  │ │Components│ │  Contexts  │ │    Utils   │ │
+│  └────┬────┘ └────┬─────┘ └─────┬─────┘ └──────┬─────┘ │
+└───────┼───────────┼─────────────┼──────────────┼───────┘
+        │           │             │              │
+        ▼           ▼             ▼              ▼
+┌─────────────────────────────────────────────────────────┐
+│                    BACKEND (Spring Boot)                 │
+│  ┌─────────┐ ┌──────────┐ ┌───────────┐ ┌────────────┐ │
+│  │ Security│ │Controller│ │ WebSocket │ │  Services  │ │
+│  └────┬────┘ └────┬─────┘ └─────┬─────┘ └──────┬─────┘ │
+│       │           │             │              │       │
+│       ▼           ▼             ▼              ▼       │
+│  ┌───────────────────────────────────────────────────┐ │
+│  │                    Repository                     │ │
+│  └────────────────────────┬──────────────────────────┘ │
+└───────────────────────────┼────────────────────────────┘
+                            ▼
+┌─────────────────────────────────────────────────────────┐
+│                     DATABASE (MySQL)                     │
+└─────────────────────────────────────────────────────────┘
 ```
 
-### Frontend Structure (`/frontend`)
-The frontend organizes code by React component boundaries and functional routing.
-
-```text
-frontend/src/
-├── components/          # Reusable UI elements (Navbar, Modals, Cards, Loaders)
-├── context/             # Global State Management (AuthContext, WebSocketContext)
-├── pages/               # Route-level components (Dashboards, Question Feed, Detail Views)
-├── utils/               # Helper functions (Axios interceptor setup, class string joiners)
-├── App.jsx              # Main application router definition
-└── main.jsx             # React DOM entry point
-```
-
 ---
 
-## 3. Core Modules
+## 🚀 Getting Started
 
-### Authentication & Security
-- **JWT Implementation:** Secure, stateless authentication utilizing JSON Web Tokens. Access tokens are kept short-lived while refresh tokens manage extended sessions.
-- **Role-Based Access Control (RBAC):** Privileges are dynamically resolved based on user roles (`ADMIN`, `STUDENT`). 
-- **Security Chain:** `JwtAuthenticationFilter` intercepts HTTP requests, validates tokens via the `Authorization` header, and populates the Spring Security Context.
-
-### Question & Answer Engine
-- **Markdown Processing:** Questions and answers utilize rich-text formatting processed via `react-simplemde-editor` and safely rendered using `react-markdown`.
-- **Relational Integrity:** Implemented through JPA associations. Questions map `OneToMany` with Answers and Votes. Users maintain `OneToMany` relationships with all their generated content.
-
-### Reputation & Gamification System
-- **Points Algorithm:** Users accrue reputation dynamically based on community interactions:
-  - Receiving upvotes on answers/questions.
-  - Having an answer marked as 'Accepted'.
-- **Rank Calculation:** The frontend maps numerical reputation scores to visual tiers (e.g., Legend, Expert, Mentor).
-
-### Real-Time Interactions
-- **WebSocket Protocol:** Implemented via Spring WebSocket (`@EnableWebSocketMessageBroker`). 
-- **STOMP Channels:** Clients subscribe to `/topic/questions` for global feed updates and `/topic/question/{id}/votes` for isolated, real-time polling updates on specific threads.
-
----
-
-## 4. Setup and Installation
+Follow these instructions to get a copy of the project up and running on your local machine.
 
 ### Prerequisites
-- Node.js (v18.x+)
-- Java Development Kit (JDK 17+)
-- MySQL (8.0+)
-- Maven (3.8.x+)
+- Node.js (v18.x or higher)
+- Java Development Kit (JDK 17 or higher)
+- MySQL (8.0 or higher)
+- Maven (3.8.x or higher)
 
-### Environment Configuration
-
-Before initializing the servers, ensure the following environments are configured.
-
-**Backend (`backend/src/main/resources/application.properties`):**
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/educonnect
-spring.datasource.username=root
-spring.datasource.password=your_password
-jwt.secret=YourHighlySecureBase64EncodedSecretStringHere
-```
-
-**Frontend (`frontend/.env`):**
-```env
-VITE_API_BASE_URL=http://localhost:8080
-```
-
-### Server Initialization
-
-**Initialize the Database:**
-Execute the following SQL command to provision the schema shell:
+### 1. Database Configuration
+Initialize the MySQL database:
 ```sql
 CREATE DATABASE IF NOT EXISTS educonnect;
+CREATE USER IF NOT EXISTS 'root'@'localhost' IDENTIFIED BY 'your_password';
+GRANT ALL PRIVILEGES ON educonnect.* TO 'root'@'localhost';
+FLUSH PRIVILEGES;
 ```
 
-**Boot the Backend:**
-Navigate to the `/backend` directory:
+### 2. Environment Variables
+Create `.env` configuration files for the frontend:
+```env
+# frontend/.env
+VITE_API_BASE_URL=http://localhost:8080
+```
+Update your backend database credentials in `backend/src/main/resources/application.properties`.
+
+### 3. Running the Backend Server
 ```bash
+cd backend
 mvn clean install
 mvn spring-boot:run
 ```
-*(The backend executes on port 8080. A development `DataSeeder` automatically injects base administrative accounts and testing tags).*
 
-**Boot the Frontend:**
-Navigate to the `/frontend` directory:
+### 4. Running the Frontend Client
 ```bash
+cd frontend
 npm install
 npm run dev
 ```
-*(The client executes on port 5173).*
+Access the application at `http://localhost:5173`.
 
 ---
 
-## 5. Development Defaults
+## 🔐 Default Test Accounts
 
-If the environment is configured correctly, the database seeder will initialize the following administrative credentials for immediate development access:
+If the `DataSeeder` runs successfully, use these credentials for immediate testing:
 
-- **Admin Control:** `admin@eduscope.com` (Password: `admin123`)
-- **Standard User:** `sarah.chen@university.edu` (Password: `password123`)
+| Role | Email | Password |
+| :--- | :--- | :--- |
+| **Admin** | `admin@eduscope.com` | `admin123` |
+| **User** | `sarah.chen@university.edu` | `password123` |
 
 ---
 
-## 6. Licensing
+## 🤝 Contributors
 
-This software is distributed under the MIT License. See the `LICENSE` file for detailed administrative guidelines.
+Contributions are welcome! If you'd like to improve the platform:
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+<div align="center">
+  <p>Distributed under the MIT License.</p>
+</div>
