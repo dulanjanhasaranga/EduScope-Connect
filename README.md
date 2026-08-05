@@ -1,96 +1,138 @@
-# EduScope Connect
+# EduScope Connect: Technical Documentation & Architecture
 
 EduScope Connect is a comprehensive, full-stack educational technology platform. It serves as a centralized ecosystem where students, educators, and institutions can collaborate, share knowledge, and build academic reputation through community-driven interactions.
 
-## Key Features
+This document provides a complete technical overview of the project's architecture, directory structure, module breakdown, and deployment configuration.
 
-- **Community-Driven Q&A:** A structured forum for academic discourse featuring rich-text Markdown formatting, hierarchical tagging, and category-based filtering.
-- **Reputation System:** A gamified engagement model that awards points for upvotes, accepted answers, and high-quality contributions, complete with a dynamic leaderboard and tier system.
-- **Ecosystem Integration:** A dedicated showcase highlighting a suite of interconnected, AI-powered educational technology tools.
-- **Real-Time Collaboration:** Instantaneous UI updates and live polling for upvotes powered by WebSockets (STOMP/SockJS).
-- **Responsive Architecture:** A modern, single-column feed layout optimized for both desktop and mobile viewing.
-- **Administrative Control:** A secure dashboard for managing user accounts, moderating content, and overseeing ecosystem product listings.
+---
 
-## Technology Stack
+## 1. System Architecture
 
-**Frontend Framework & Libraries**
-- React 18 (Vite)
-- Tailwind CSS
-- Framer Motion
-- React Router DOM
-- React SimpleMDE
+The application follows a modern decoupled architecture:
+- **Client Tier:** A single-page application (SPA) built with React and Vite. State is managed via React Context and data fetching is handled through Axios with HTTP interceptors for JWT token lifecycle management.
+- **Application Tier:** A RESTful API built on Spring Boot 3.2. It manages business logic, stateless security, and transactional database operations.
+- **Data Tier:** A MySQL relational database managing persistent entities, relationships, and metadata.
+- **Messaging Tier:** WebSockets via STOMP protocol enabling real-time vote count updates and new post notifications.
 
-**Backend Architecture**
-- Spring Boot 3.2 (Java 17)
-- Spring Security (JWT Authentication)
-- Spring Data JPA / Hibernate
-- MySQL
-- WebSockets (STOMP messaging)
+---
 
-## Installation and Setup
+## 2. Directory Structure
 
-The following instructions will guide you through setting up the project locally for development and testing.
+The repository is partitioned into two independent applications.
 
-### Prerequisites
+### Backend Structure (`/backend`)
+The backend is structured by feature components following standard Spring MVC patterns.
 
-Ensure the following dependencies are installed on your system:
-- Node.js (v18.x or higher)
-- Java Development Kit (JDK 17 or higher)
-- MySQL (8.0 or higher)
-- Maven (3.8.x or higher)
-
-### 1. Database Configuration
-
-Initialize the MySQL database using the following commands:
-```sql
-CREATE DATABASE IF NOT EXISTS educonnect;
-CREATE USER IF NOT EXISTS 'root'@'localhost' IDENTIFIED BY 'your_password';
-GRANT ALL PRIVILEGES ON educonnect.* TO 'root'@'localhost';
-FLUSH PRIVILEGES;
+```text
+backend/src/main/java/com/educonnect/
+├── config/              # Configuration classes (Security, WebSockets, CORS, DataSeeding)
+├── controller/          # REST API Endpoints (Auth, Questions, Ecosystem, Admin)
+├── dto/                 # Data Transfer Objects for API requests/responses
+├── model/               # JPA Entity Definitions (User, Question, Answer, Vote, Tag)
+├── repository/          # Spring Data JPA Interfaces for database access
+├── security/            # JWT Filters, Authentication Providers, UserDetails configuration
+├── service/             # Core Business Logic and transactional boundaries
+└── websocket/           # WebSocket configuration and STOMP event listeners
 ```
 
-### 2. Environment Variables
+### Frontend Structure (`/frontend`)
+The frontend organizes code by React component boundaries and functional routing.
 
-Create `.env` configuration files to manage local environment settings.
+```text
+frontend/src/
+├── components/          # Reusable UI elements (Navbar, Modals, Cards, Loaders)
+├── context/             # Global State Management (AuthContext, WebSocketContext)
+├── pages/               # Route-level components (Dashboards, Question Feed, Detail Views)
+├── utils/               # Helper functions (Axios interceptor setup, class string joiners)
+├── App.jsx              # Main application router definition
+└── main.jsx             # React DOM entry point
+```
+
+---
+
+## 3. Core Modules
+
+### Authentication & Security
+- **JWT Implementation:** Secure, stateless authentication utilizing JSON Web Tokens. Access tokens are kept short-lived while refresh tokens manage extended sessions.
+- **Role-Based Access Control (RBAC):** Privileges are dynamically resolved based on user roles (`ADMIN`, `STUDENT`). 
+- **Security Chain:** `JwtAuthenticationFilter` intercepts HTTP requests, validates tokens via the `Authorization` header, and populates the Spring Security Context.
+
+### Question & Answer Engine
+- **Markdown Processing:** Questions and answers utilize rich-text formatting processed via `react-simplemde-editor` and safely rendered using `react-markdown`.
+- **Relational Integrity:** Implemented through JPA associations. Questions map `OneToMany` with Answers and Votes. Users maintain `OneToMany` relationships with all their generated content.
+
+### Reputation & Gamification System
+- **Points Algorithm:** Users accrue reputation dynamically based on community interactions:
+  - Receiving upvotes on answers/questions.
+  - Having an answer marked as 'Accepted'.
+- **Rank Calculation:** The frontend maps numerical reputation scores to visual tiers (e.g., Legend, Expert, Mentor).
+
+### Real-Time Interactions
+- **WebSocket Protocol:** Implemented via Spring WebSocket (`@EnableWebSocketMessageBroker`). 
+- **STOMP Channels:** Clients subscribe to `/topic/questions` for global feed updates and `/topic/question/{id}/votes` for isolated, real-time polling updates on specific threads.
+
+---
+
+## 4. Setup and Installation
+
+### Prerequisites
+- Node.js (v18.x+)
+- Java Development Kit (JDK 17+)
+- MySQL (8.0+)
+- Maven (3.8.x+)
+
+### Environment Configuration
+
+Before initializing the servers, ensure the following environments are configured.
 
 **Backend (`backend/src/main/resources/application.properties`):**
-Ensure the database credentials in `application.properties` match your local MySQL configuration.
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/educonnect
+spring.datasource.username=root
+spring.datasource.password=your_password
+jwt.secret=YourHighlySecureBase64EncodedSecretStringHere
+```
 
 **Frontend (`frontend/.env`):**
-Create a `.env` file in the root of the `frontend` directory:
 ```env
 VITE_API_BASE_URL=http://localhost:8080
 ```
 
-### 3. Running the Backend Server
+### Server Initialization
 
-Navigate to the `backend` directory, build the project, and initialize the Spring Boot application:
+**Initialize the Database:**
+Execute the following SQL command to provision the schema shell:
+```sql
+CREATE DATABASE IF NOT EXISTS educonnect;
+```
+
+**Boot the Backend:**
+Navigate to the `/backend` directory:
 ```bash
-cd backend
 mvn clean install
 mvn spring-boot:run
 ```
-*Note: A `DataSeeder` class will automatically populate the database with initial taxonomies and default users when running locally.*
+*(The backend executes on port 8080. A development `DataSeeder` automatically injects base administrative accounts and testing tags).*
 
-### 4. Running the Frontend Client
-
-Navigate to the `frontend` directory, install dependencies, and start the Vite development server:
+**Boot the Frontend:**
+Navigate to the `/frontend` directory:
 ```bash
-cd frontend
 npm install
 npm run dev
 ```
-The application will be accessible at `http://localhost:5173`.
+*(The client executes on port 5173).*
 
-## Default Credentials
+---
 
-For local testing purposes, the database seeder provisions the following accounts:
+## 5. Development Defaults
 
-| Role | Email | Password |
-| :--- | :--- | :--- |
-| Admin | `admin@eduscope.com` | `admin123` |
-| User | `sarah.chen@university.edu` | `password123` |
+If the environment is configured correctly, the database seeder will initialize the following administrative credentials for immediate development access:
 
-## License
+- **Admin Control:** `admin@eduscope.com` (Password: `admin123`)
+- **Standard User:** `sarah.chen@university.edu` (Password: `password123`)
 
-This project is distributed under the MIT License. See the `LICENSE` file for detailed information.
+---
+
+## 6. Licensing
+
+This software is distributed under the MIT License. See the `LICENSE` file for detailed administrative guidelines.
