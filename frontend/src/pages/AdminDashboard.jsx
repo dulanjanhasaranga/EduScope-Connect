@@ -134,7 +134,7 @@ export default function AdminDashboard() {
     <div className="max-w-6xl mx-auto p-6 bg-white rounded-3xl shadow-sm border border-slate-200">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 pb-4 border-b border-slate-100 gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-red-100 rounded-xl text-red-600">
+          <div className="p-3 bg-slate-800 rounded-xl text-white">
             <ShieldCheck className="w-6 h-6" />
           </div>
           <div>
@@ -187,14 +187,14 @@ export default function AdminDashboard() {
                     <td className="p-4 font-semibold text-slate-800">{u.username}</td>
                     <td className="p-4 text-slate-600">{u.email}</td>
                     <td className="p-4">
-                      <span className={`px-2 py-1 rounded text-xs font-bold ${u.role === 'ADMIN' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'}`}>
+                      <span className={`px-2 py-1 rounded text-xs font-bold ${u.role === 'ADMIN' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-700 border border-slate-200'}`}>
                         {u.role}
                       </span>
                     </td>
                     <td className="p-4 text-slate-600 font-medium">{u.reputationScore}</td>
                     <td className="p-4 text-right flex justify-end gap-2">
-                      <button onClick={() => handleToggleRole(u.id, u.role)} className="p-2 text-yellow-600 hover:bg-yellow-50 rounded" title="Toggle Role"><Shield className="w-4 h-4" /></button>
-                      <button onClick={() => handleDeleteUser(u.id)} className="p-2 text-red-600 hover:bg-red-50 rounded" title="Delete User"><Trash2 className="w-4 h-4" /></button>
+                      <button onClick={() => handleToggleRole(u.id, u.role)} className="p-2 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded" title="Toggle Role"><Shield className="w-4 h-4" /></button>
+                      <button onClick={() => handleDeleteUser(u.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded" title="Delete User"><Trash2 className="w-4 h-4" /></button>
                     </td>
                   </tr>
                 ))}
@@ -220,7 +220,7 @@ export default function AdminDashboard() {
                     <td className="p-4 text-slate-600">{q.authorUsername}</td>
                     <td className="p-4 text-slate-500 text-sm">{new Date(q.createdAt).toLocaleDateString()}</td>
                     <td className="p-4 text-right">
-                      <button onClick={() => handleDeleteQuestion(q.id)} className="p-2 text-red-600 hover:bg-red-50 rounded"><Trash2 className="w-4 h-4" /></button>
+                      <button onClick={() => handleDeleteQuestion(q.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded"><Trash2 className="w-4 h-4" /></button>
                     </td>
                   </tr>
                 ))}
@@ -232,7 +232,7 @@ export default function AdminDashboard() {
           {activeTab === 'products' && (
             <div>
               <div className="flex justify-end mb-4">
-                <button onClick={handleCreateProduct} className="btn-primary flex items-center gap-2">
+                <button onClick={handleCreateProduct} className="px-4 py-2 bg-slate-900 text-white rounded-lg flex items-center gap-2 hover:bg-slate-800 transition-colors">
                   <Plus className="w-4 h-4" /> Add Product
                 </button>
               </div>
@@ -281,7 +281,7 @@ export default function AdminDashboard() {
                   
                   <div className="flex justify-end gap-3 pt-4 border-t">
                     <button type="button" onClick={() => setIsEditingProduct(false)} className="px-4 py-2 text-slate-600 hover:bg-slate-200 rounded">Cancel</button>
-                    <button type="submit" className="px-4 py-2 bg-primary-600 text-white rounded flex items-center gap-2 hover:bg-primary-700"><Save className="w-4 h-4"/> Save Product</button>
+                    <button type="submit" className="px-4 py-2 bg-slate-900 text-white rounded flex items-center gap-2 hover:bg-slate-800 transition-colors"><Save className="w-4 h-4"/> Save Product</button>
                   </div>
                 </form>
               ) : (
@@ -301,8 +301,8 @@ export default function AdminDashboard() {
                         <td className="p-4"><span className="px-2 py-1 bg-slate-200 rounded text-xs">{p.category}</span></td>
                         <td className="p-4 text-slate-500 text-sm">{p.id}</td>
                         <td className="p-4 text-right">
-                          <button onClick={() => handleEditProduct(p)} className="p-2 text-blue-600 hover:bg-blue-50 rounded mr-2"><Edit className="w-4 h-4" /></button>
-                          <button onClick={() => handleDeleteProduct(p.id)} className="p-2 text-red-600 hover:bg-red-50 rounded"><Trash2 className="w-4 h-4" /></button>
+                          <button onClick={() => handleEditProduct(p)} className="p-2 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded mr-2"><Edit className="w-4 h-4" /></button>
+                          <button onClick={() => handleDeleteProduct(p.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded"><Trash2 className="w-4 h-4" /></button>
                         </td>
                       </tr>
                     ))}
