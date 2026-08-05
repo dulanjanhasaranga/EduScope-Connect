@@ -16,9 +16,11 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [toasts, setToasts] = useState([]);
   const notifRef = useRef(null);
+  const profileRef = useRef(null);
   const mobileMenuRef = useRef(null);
 
   useEffect(() => {
@@ -39,6 +41,9 @@ export default function Navbar() {
     const handleClickOutside = (e) => {
       if (notifRef.current && !notifRef.current.contains(e.target)) {
         setShowNotifications(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setShowProfileMenu(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -170,36 +175,59 @@ export default function Navbar() {
                   Ask Question
                 </Link>
 
-                {/* Profile & Reputation */}
-                <Link to="/profile" className="flex items-center gap-2 text-gray-700 hover:text-primary-600 transition-colors" id="nav-profile">
-                  <div className="flex items-center gap-1 bg-primary-50 px-3 py-1.5 rounded-full">
-                    <Award className="h-4 w-4 text-primary-600" />
-                    <span className="text-sm font-medium text-primary-700">{user?.reputationScore || 0}</span>
-                  </div>
-                  <User className="h-5 w-5" />
-                  <span className="hidden sm:inline text-sm font-medium">{user?.username}</span>
-                </Link>
-
-                {user?.role === 'ADMIN' && (
-                  <Link 
-                    to="/admin" 
-                    className="p-2 text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-colors flex items-center gap-2" 
-                    title="Admin Dashboard"
+                {/* Profile Dropdown */}
+                <div className="relative" ref={profileRef}>
+                  <button 
+                    onClick={() => setShowProfileMenu(!showProfileMenu)}
+                    className="flex items-center gap-2 text-gray-700 hover:text-primary-600 transition-colors" 
+                    id="nav-profile-btn"
                   >
-                    <ShieldCheck className="h-5 w-5" />
-                    <span className="hidden lg:inline text-sm font-bold">Admin</span>
-                  </Link>
-                )}
+                    <div className="flex items-center gap-1 bg-primary-50 px-3 py-1.5 rounded-full">
+                      <Award className="h-4 w-4 text-primary-600" />
+                      <span className="text-sm font-medium text-primary-700">{user?.reputationScore || 0}</span>
+                    </div>
+                    <User className="h-5 w-5" />
+                    <span className="hidden sm:inline text-sm font-medium">{user?.username}</span>
+                  </button>
 
-                {/* Logout */}
-                <button
-                  onClick={handleLogout}
-                  className="p-2 text-gray-600 hover:text-red-600 transition-colors"
-                  title="Logout"
-                  id="nav-logout-btn"
-                >
-                  <LogOut className="h-5 w-5" />
-                </button>
+                  {showProfileMenu && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 animate-fade-in">
+                      <div className="px-4 py-2 border-b border-gray-100 mb-1">
+                        <p className="text-sm font-medium text-gray-900 truncate">{user?.email}</p>
+                      </div>
+                      
+                      <Link 
+                        to="/profile" 
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                        onClick={() => setShowProfileMenu(false)}
+                      >
+                        <User className="h-4 w-4" /> My Profile
+                      </Link>
+                      
+                      {user?.role === 'ADMIN' && (
+                        <Link 
+                          to="/admin" 
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                          onClick={() => setShowProfileMenu(false)}
+                        >
+                          <ShieldCheck className="h-4 w-4" /> Admin Dashboard
+                        </Link>
+                      )}
+                      
+                      <div className="border-t border-gray-100 mt-1 pt-1">
+                        <button
+                          onClick={() => {
+                            setShowProfileMenu(false);
+                            handleLogout();
+                          }}
+                          className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                        >
+                          <LogOut className="h-4 w-4" /> Logout
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </>
             ) : (
               <>
