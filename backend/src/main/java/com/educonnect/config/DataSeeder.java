@@ -2,10 +2,14 @@ package com.educonnect.config;
 
 import com.educonnect.model.EcosystemProduct;
 import com.educonnect.model.Tag;
+import com.educonnect.model.User;
+import com.educonnect.model.AuditLog;
+import com.educonnect.model.SystemSetting;
 import com.educonnect.repository.EcosystemProductRepository;
 import com.educonnect.repository.TagRepository;
-import com.educonnect.model.User;
 import com.educonnect.repository.UserRepository;
+import com.educonnect.repository.AuditLogRepository;
+import com.educonnect.repository.SystemSettingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -58,12 +62,20 @@ public class DataSeeder implements CommandLineRunner {
     @Autowired
     private QuestionVoteRepository questionVoteRepository;
 
+    @Autowired
+    private AuditLogRepository auditLogRepository;
+
+    @Autowired
+    private SystemSettingRepository systemSettingRepository;
+
     @Override
     public void run(String... args) throws Exception {
+        seedSystemSettings();
         seedUsers();
         seedEcosystemProducts();
         seedTags();
         seedQuestionsAndAnswers();
+        seedAuditLogs();
     }
 
     private void seedUsers() {
@@ -1362,6 +1374,35 @@ public class DataSeeder implements CommandLineRunner {
             // ... omitting for brevity, they have base rep ...
         }
         System.out.println("Finished seeding questions, answers, and interactions!");
+    }
+
+    private void seedSystemSettings() {
+        if (systemSettingRepository.count() == 0) {
+            System.out.println("Seeding System Settings...");
+            List<SystemSetting> settings = Arrays.asList(
+                    SystemSetting.builder().key("MAINTENANCE_MODE").value("false").description("Enable to put the site into maintenance mode.").build(),
+                    SystemSetting.builder().key("ALLOW_PUBLIC_REGISTRATION").value("true").description("Allow new users to register an account.").build(),
+                    SystemSetting.builder().key("MAX_UPLOAD_SIZE_MB").value("50").description("Maximum allowed file upload size in MB.").build(),
+                    SystemSetting.builder().key("SUPPORT_EMAIL").value("support@eduscopeglobal.com").description("Email address for user support inquiries.").build()
+            );
+            systemSettingRepository.saveAll(settings);
+        }
+    }
+
+    private void seedAuditLogs() {
+        if (auditLogRepository.count() == 0) {
+            System.out.println("Seeding Audit Logs...");
+            User admin = userRepository.findByEmail("dulanjan.connect@gmail.com").orElse(null);
+            if (admin == null) return;
+            
+            List<AuditLog> logs = Arrays.asList(
+                    AuditLog.builder().action("UPDATED_SETTING").entityName("SystemSetting").entityId(1L).performedBy(admin).details("Changed MAINTENANCE_MODE from true to false").timestamp(LocalDateTime.now().minusDays(1)).build(),
+                    AuditLog.builder().action("DELETED_QUESTION").entityName("Question").entityId(99L).performedBy(admin).details("Deleted spam question 'buy cheap watches'").timestamp(LocalDateTime.now().minusHours(12)).build(),
+                    AuditLog.builder().action("PROMOTED_USER").entityName("User").entityId(3L).performedBy(admin).details("Promoted user erodriguez@research.edu to LEADER role").timestamp(LocalDateTime.now().minusHours(5)).build(),
+                    AuditLog.builder().action("CREATED_ECOSYSTEM_APP").entityName("EcosystemProduct").entityId(5L).performedBy(admin).details("Added RxCalculations product").timestamp(LocalDateTime.now().minusMinutes(30)).build()
+            );
+            auditLogRepository.saveAll(logs);
+        }
     }
 
 }

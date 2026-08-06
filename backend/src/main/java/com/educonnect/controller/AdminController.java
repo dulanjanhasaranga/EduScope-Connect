@@ -9,7 +9,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import com.educonnect.dto.AdminAnalyticsDTO;
+import com.educonnect.dto.AuditLogDTO;
+import com.educonnect.dto.SystemSettingDTO;
+import com.educonnect.service.AdminService;
+
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -24,6 +30,9 @@ public class AdminController {
 
     @Autowired
     private AnswerRepository answerRepository;
+
+    @Autowired
+    private AdminService adminService;
 
     // Users
     @GetMapping("/users")
@@ -83,6 +92,32 @@ public class AdminController {
         }
         answerRepository.deleteById(id);
         return ResponseEntity.ok().build();
+    }
+
+    // Analytics & Logs & Settings
+    @GetMapping("/analytics")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<AdminAnalyticsDTO> getAnalytics() {
+        return ResponseEntity.ok(adminService.getAnalytics());
+    }
+
+    @GetMapping("/audit-logs")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<List<AuditLogDTO>> getAuditLogs() {
+        return ResponseEntity.ok(adminService.getAuditLogs());
+    }
+
+    @GetMapping("/settings")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<List<SystemSettingDTO>> getSettings() {
+        return ResponseEntity.ok(adminService.getSettings());
+    }
+
+    @PatchMapping("/settings/{key}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<SystemSettingDTO> updateSetting(@PathVariable String key, @RequestBody Map<String, String> body) {
+        String value = body.get("value");
+        return ResponseEntity.ok(adminService.updateSetting(key, value));
     }
 
     private UserDTO mapUserToDTO(User user) {
