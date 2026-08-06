@@ -26,8 +26,8 @@ public class AnalyticsController {
     @GetMapping("/leader")
     @PreAuthorize("hasAuthority('system:config') or hasAuthority('leaders:verify') or hasRole('LEADER')")
     public ResponseEntity<Map<String, Object>> getLeaderAnalytics() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User leader = userRepository.findByUsername(username).orElse(null);
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User leader = userRepository.findByEmail(email).orElse(null);
         if (leader == null) return ResponseEntity.badRequest().build();
 
         long totalAnswers = answerRepository.countByAuthor(leader);

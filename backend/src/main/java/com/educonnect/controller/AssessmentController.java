@@ -37,8 +37,8 @@ public class AssessmentController {
     @PostMapping
     @PreAuthorize("hasAuthority('system:config') or hasAuthority('leaders:verify')")
     public ResponseEntity<Assessment> createAssessment(@RequestBody Assessment assessment) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User author = userRepository.findByUsername(username).orElse(null);
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User author = userRepository.findByEmail(email).orElse(null);
         if (author == null) return ResponseEntity.badRequest().build();
 
         assessment.setAuthor(author);

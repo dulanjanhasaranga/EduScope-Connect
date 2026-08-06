@@ -15,6 +15,6 @@ try:
     response2 = urllib.request.urlopen(req2)
     users = json.loads(response2.read().decode('utf-8'))
     for u in users:
-        print(f"{u.get('username')}: {u.get('role')}")
+        print(f"{u.get('id')}: {u.get('username')}: {u.get('role')}")
 except urllib.error.HTTPError as e:
     pass
