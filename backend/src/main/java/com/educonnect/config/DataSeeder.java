@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import com.educonnect.model.Question;
 import com.educonnect.model.Answer;
 import com.educonnect.model.Vote;
@@ -23,6 +24,8 @@ import com.educonnect.repository.QuestionRepository;
 import com.educonnect.repository.AnswerRepository;
 import com.educonnect.repository.VoteRepository;
 import com.educonnect.repository.QuestionVoteRepository;
+import com.educonnect.repository.GroupMessageRepository;
+import com.educonnect.model.GroupMessage;
 import org.springframework.context.annotation.Profile;
 
 import java.time.LocalDateTime;
@@ -35,6 +38,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Component
+@Transactional
 @Profile("!prod")
 public class DataSeeder implements CommandLineRunner {
 
@@ -74,6 +78,9 @@ public class DataSeeder implements CommandLineRunner {
     @Autowired
     private com.educonnect.repository.StudyGroupRepository studyGroupRepository;
 
+    @Autowired
+    private GroupMessageRepository groupMessageRepository;
+
     @Override
     public void run(String... args) throws Exception {
         seedSystemSettings();
@@ -84,6 +91,7 @@ public class DataSeeder implements CommandLineRunner {
         seedHistoricalAnswersForLeaders();
         seedAssessments();
         seedStudyGroups();
+        seedNewStudentsAndActivity();
         seedAuditLogs();
     }
 
@@ -336,13 +344,11 @@ public class DataSeeder implements CommandLineRunner {
     }
 
     private void seedQuestionsAndAnswers() {
-        System.out.println("Cleaning up existing questions, answers, and votes...");
-        voteRepository.deleteAll();
-        questionVoteRepository.deleteAll();
-        answerRepository.deleteAll();
-        questionRepository.deleteAll();
-
-        System.out.println("Fetching users and tags...");
+        if (questionRepository.count() > 0) {
+            System.out.println("Questions already seeded. Skipping...");
+            return;
+        }
+        System.out.println("Seeding 20 high-quality questions...");
         List<User> users = userRepository.findAll();
         if (users.isEmpty()) return;
 
@@ -354,7 +360,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I understand that FacultyLens uses predictive analytics to balance teaching and research, but service contributions (like committees or advising) vary wildly in effort. Does the platform allow for custom weighting of different service activities, or does it use a standardized model?")
                 .author(users.get(1 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(3).minusHours(10))
+                .createdAt(LocalDateTime.now().minusDays(new java.util.Random().nextInt(180)).minusHours(new java.util.Random().nextInt(24)))
                 .build();
         
         Set<Tag> tags0 = new java.util.HashSet<>();
@@ -373,7 +379,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I've tried using standard ChatGPT for summarizing dense biology papers, but it often hallucinates or misses key methodological details. Is Bevinzey's underlying LLM specifically fine-tuned for academic and scientific texts?")
                 .author(users.get(2 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(6).minusHours(12))
+                .createdAt(LocalDateTime.now().minusDays(new java.util.Random().nextInt(180)).minusHours(new java.util.Random().nextInt(24)))
                 .build();
         
         Set<Tag> tags1 = new java.util.HashSet<>();
@@ -392,7 +398,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I am looking into evaluating some custom LLMs we deployed for student advising. I keep seeing 'G-Eval' mentioned in the Evalometrics documentation. Can someone explain how it differs from traditional ROUGE or BLEU scores?")
                 .author(users.get(4 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(5).minusHours(2))
+                .createdAt(LocalDateTime.now().minusDays(new java.util.Random().nextInt(180)).minusHours(new java.util.Random().nextInt(24)))
                 .build();
         
         Set<Tag> tags2 = new java.util.HashSet<>();
@@ -411,7 +417,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("StudySocius has been amazing for keeping my assignment streaks alive. However, I want to sync my study blocks directly to Google Calendar. Is there a two-way sync available currently?")
                 .author(users.get(5 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(1).minusHours(9))
+                .createdAt(LocalDateTime.now().minusDays(new java.util.Random().nextInt(180)).minusHours(new java.util.Random().nextInt(24)))
                 .build();
         
         Set<Tag> tags3 = new java.util.HashSet<>();
@@ -428,7 +434,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I am struggling with the parenteral nutrition (TPN) calculations for my upcoming NAPLEX. Which specific video tutorials or question banks in RxCalculations are best for this?")
                 .author(users.get(3 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(2).minusHours(3))
+                .createdAt(LocalDateTime.now().minusDays(new java.util.Random().nextInt(180)).minusHours(new java.util.Random().nextInt(24)))
                 .build();
         
         Set<Tag> tags4 = new java.util.HashSet<>();
@@ -447,7 +453,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("With tools like Bevinzey generating answers, how do educators ensure that students are actually learning the material and not just copy-pasting AI outputs for their assignments?")
                 .author(users.get(1 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(0).minusHours(7))
+                .createdAt(LocalDateTime.now().minusDays(new java.util.Random().nextInt(180)).minusHours(new java.util.Random().nextInt(24)))
                 .build();
         
         Set<Tag> tags5 = new java.util.HashSet<>();
@@ -466,7 +472,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("Our university has strict data privacy laws (FERPA compliance) and we cannot send student interaction data to OpenAI or Anthropic APIs. Can Evalometrics be configured to use local open-source models (like Llama 3) for its evaluation metrics?")
                 .author(users.get(4 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(2).minusHours(6))
+                .createdAt(LocalDateTime.now().minusDays(new java.util.Random().nextInt(180)).minusHours(new java.util.Random().nextInt(24)))
                 .build();
         
         Set<Tag> tags6 = new java.util.HashSet<>();
@@ -485,7 +491,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("My StudySocius productivity score dropped slightly over the weekend even though I completed all my tasks. What factors go into this calculation? Does it penalize taking rest days?")
                 .author(users.get(5 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(0).minusHours(20))
+                .createdAt(LocalDateTime.now().minusDays(new java.util.Random().nextInt(180)).minusHours(new java.util.Random().nextInt(24)))
                 .build();
         
         Set<Tag> tags7 = new java.util.HashSet<>();
@@ -502,7 +508,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("Our institution only has about 150 faculty members. The predictive models in FacultyLens seem geared towards massive R1 research universities. Does the AI perform well with smaller datasets?")
                 .author(users.get(1 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(0).minusHours(4))
+                .createdAt(LocalDateTime.now().minusDays(new java.util.Random().nextInt(180)).minusHours(new java.util.Random().nextInt(24)))
                 .build();
         
         Set<Tag> tags8 = new java.util.HashSet<>();
@@ -519,7 +525,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I'm a med student considering using Bevinzey to automatically generate Anki flashcards from my lecture PDFs. Has anyone tested its accuracy for dense medical topics like neuroanatomy?")
                 .author(users.get(3 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(2).minusHours(22))
+                .createdAt(LocalDateTime.now().minusDays(new java.util.Random().nextInt(180)).minusHours(new java.util.Random().nextInt(24)))
                 .build();
         
         Set<Tag> tags9 = new java.util.HashSet<>();
@@ -538,7 +544,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I constantly get confused when mixing two different strengths of a compound. Does RxCalculations teach both the alligation alternate method and the standard algebraic method?")
                 .author(users.get(2 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(1).minusHours(21))
+                .createdAt(LocalDateTime.now().minusDays(new java.util.Random().nextInt(180)).minusHours(new java.util.Random().nextInt(24)))
                 .build();
         
         Set<Tag> tags10 = new java.util.HashSet<>();
@@ -555,7 +561,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I want to evaluate a student-support chatbot. In addition to accuracy, I want to measure 'empathy' and 'tone'. How easy is it to define these custom metrics in Evalometrics?")
                 .author(users.get(4 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(6).minusHours(13))
+                .createdAt(LocalDateTime.now().minusDays(new java.util.Random().nextInt(180)).minusHours(new java.util.Random().nextInt(24)))
                 .build();
         
         Set<Tag> tags11 = new java.util.HashSet<>();
@@ -572,7 +578,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("If I upload two papers that directly contradict each other, how does Bevinzey's Q&A generation handle the discrepancy? Does it hallucinate a middle ground, or point out the conflict?")
                 .author(users.get(2 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(4).minusHours(5))
+                .createdAt(LocalDateTime.now().minusDays(new java.util.Random().nextInt(180)).minusHours(new java.util.Random().nextInt(24)))
                 .build();
         
         Set<Tag> tags12 = new java.util.HashSet<>();
@@ -591,7 +597,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("Transparency is a big issue at our university. If department chairs are using FacultyLens to assign workloads, do individual faculty members get a dashboard to see their own metrics and predictions?")
                 .author(users.get(1 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(1).minusHours(11))
+                .createdAt(LocalDateTime.now().minusDays(new java.util.Random().nextInt(180)).minusHours(new java.util.Random().nextInt(24)))
                 .build();
         
         Set<Tag> tags13 = new java.util.HashSet<>();
@@ -608,7 +614,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I'm trying to convince my study group to switch to StudySocius. Besides task tracking, what gamification features does it have to keep people motivated?")
                 .author(users.get(5 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(0).minusHours(8))
+                .createdAt(LocalDateTime.now().minusDays(new java.util.Random().nextInt(180)).minusHours(new java.util.Random().nextInt(24)))
                 .build();
         
         Set<Tag> tags14 = new java.util.HashSet<>();
@@ -625,7 +631,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I know RxCalculations is geared towards pharmacy students, but I am in nursing school studying for the NCLEX. Would the dosage calculation modules be overkill, or still useful for me?")
                 .author(users.get(3 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(2).minusHours(22))
+                .createdAt(LocalDateTime.now().minusDays(new java.util.Random().nextInt(180)).minusHours(new java.util.Random().nextInt(24)))
                 .build();
         
         Set<Tag> tags15 = new java.util.HashSet<>();
@@ -644,7 +650,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("We want to run LLM evaluations automatically every time we push a prompt update to GitHub. Does Evalometrics have integrations for GitHub Actions or Jenkins?")
                 .author(users.get(4 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(4).minusHours(5))
+                .createdAt(LocalDateTime.now().minusDays(new java.util.Random().nextInt(180)).minusHours(new java.util.Random().nextInt(24)))
                 .build();
         
         Set<Tag> tags16 = new java.util.HashSet<>();
@@ -663,7 +669,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I use Obsidian for my 'Second Brain'. Is there a seamless way to export the Markdown summaries and Q&A pairs generated by Bevinzey directly into Obsidian or Notion?")
                 .author(users.get(5 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(5).minusHours(5))
+                .createdAt(LocalDateTime.now().minusDays(new java.util.Random().nextInt(180)).minusHours(new java.util.Random().nextInt(24)))
                 .build();
         
         Set<Tag> tags17 = new java.util.HashSet<>();
@@ -680,7 +686,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("When using AI tools in the EduScope ecosystem to assist with grading or evaluating student input, how do you mitigate algorithmic bias against non-native English speakers?")
                 .author(users.get(1 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(5).minusHours(23))
+                .createdAt(LocalDateTime.now().minusDays(new java.util.Random().nextInt(180)).minusHours(new java.util.Random().nextInt(24)))
                 .build();
         
         Set<Tag> tags18 = new java.util.HashSet<>();
@@ -699,7 +705,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("Can FacultyLens automatically pull teaching workload data (like number of students, assignments graded) directly from Canvas or Blackboard via API?")
                 .author(users.get(2 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(4).minusHours(23))
+                .createdAt(LocalDateTime.now().minusDays(new java.util.Random().nextInt(180)).minusHours(new java.util.Random().nextInt(24)))
                 .build();
         
         Set<Tag> tags19 = new java.util.HashSet<>();
@@ -1515,4 +1521,121 @@ public class DataSeeder implements CommandLineRunner {
 
         studyGroupRepository.saveAll(Arrays.asList(g1, g2, g3));
     }
+    private void seedNewStudentsAndActivity() {
+        if (userRepository.count() > 10) {
+            // Already seeded
+            return;
+        }
+        System.out.println("Seeding new students and their activities...");
+
+        String[] names = {
+            "Shenal Kavindu", "Yenuli Himasha", "Dineth Tharusha", "Senuli Oneli", "Kenula Dilshan",
+            "Kaveesha Sandeep", "Ayesha Nethmini", "Pramod Heshan", "Sandali Nisansa", "Vihanga Lakshan",
+            "Himandi Nuwandika", "Tharuka Deshan", "Maleesha Ravishan", "Hasini Piyumali", "Janith Nethsara",
+            "Kavya Sanjana", "Ravindu Gimhan", "Oshadhi Navodya", "Chamath Dhananjaya", "Hiruni Hansika"
+        };
+
+        List<User> newStudents = new ArrayList<>();
+        for (String name : names) {
+            String[] parts = name.split(" ");
+            String first = parts[0];
+            String last = parts[1];
+            String email = first.toLowerCase() + last.toLowerCase() + "@gmail.com";
+            String password = first + "1@";
+
+            if (userRepository.findByEmail(email).isEmpty()) {
+                User student = User.builder()
+                        .username(name)
+                        .email(email)
+                        .passwordHash(passwordEncoder.encode(password))
+                        .role(User.Role.STUDENT)
+                        .bio("Student eager to learn.")
+                        .avatarUrl("https://ui-avatars.com/api/?name=" + first + "+" + last + "&background=random")
+                        .reputationScore(10 + new java.util.Random().nextInt(50))
+                        .build();
+                newStudents.add(userRepository.save(student));
+            }
+        }
+
+        if (newStudents.isEmpty()) return;
+
+        // Fetch groups
+        List<com.educonnect.model.StudyGroup> groups = studyGroupRepository.findAll();
+        if (groups.isEmpty()) return;
+        
+        String[] groupTopics = {"Machine Learning", "Medicine", "Mathematics"};
+        String[] questionsForTopics = {
+            "Can someone explain the backpropagation algorithm in simple terms?",
+            "What is the best way to memorize the cranial nerves?",
+            "I'm stuck on integrating by parts. Any tips?"
+        };
+        String[] answersForTopics = {
+            "Think of it as adjusting the weights backwards based on the error output.",
+            "Use a mnemonic like 'Oh Oh Oh To Touch And Feel...'",
+            "Remember ILATE (Inverse, Logarithmic, Algebraic, Trigonometric, Exponential) to choose 'u'."
+        };
+
+        java.util.Random random = new java.util.Random();
+        
+        // Ensure dummy question list exists
+        List<Question> platformQuestions = new ArrayList<>();
+
+        for (int i = 0; i < newStudents.size(); i++) {
+            User student = newStudents.get(i);
+            
+            // Assign to group
+            com.educonnect.model.StudyGroup group = groups.get(i % groups.size());
+            if (group.getMembers() == null) group.setMembers(new java.util.HashSet<>());
+            group.getMembers().add(student);
+            studyGroupRepository.save(group);
+            
+            // Add a group message
+            GroupMessage msg = GroupMessage.builder()
+                .group(group)
+                .author(student)
+                .content("Hi everyone! I just joined to learn more about " + groupTopics[i % groups.size()] + ".")
+                .createdAt(LocalDateTime.now().minusDays(random.nextInt(30)))
+                .build();
+            groupMessageRepository.save(msg);
+
+            // Add a platform question
+            Question q = Question.builder()
+                .title("Question about " + groupTopics[i % groups.size()])
+                .body(questionsForTopics[i % groups.size()])
+                .author(student)
+                .voteCount(random.nextInt(15))
+                .createdAt(LocalDateTime.now().minusDays(random.nextInt(180)))
+                .build();
+            q = questionRepository.save(q);
+            platformQuestions.add(q);
+            
+            // Add an answer to this question from another student
+            User responder = newStudents.get((i + 1) % newStudents.size());
+            Answer a = Answer.builder()
+                .body(answersForTopics[i % groups.size()])
+                .author(responder)
+                .question(q)
+                .voteCount(random.nextInt(10))
+                .createdAt(q.getCreatedAt().plusHours(random.nextInt(48) + 1))
+                .isAccepted(random.nextBoolean())
+                .build();
+            answerRepository.save(a);
+        }
+        
+        // Add leaders responding to groups
+        List<User> leaders = userRepository.findAll().stream().filter(u -> u.getRole() == User.Role.LEADER).collect(java.util.stream.Collectors.toList());
+        if (!leaders.isEmpty()) {
+            for (com.educonnect.model.StudyGroup g : groups) {
+                User leader = leaders.get(random.nextInt(leaders.size()));
+                GroupMessage leaderMsg = GroupMessage.builder()
+                    .group(g)
+                    .author(leader)
+                    .content("Welcome all new students! Feel free to ask any questions here. I'm happy to help.")
+                    .createdAt(LocalDateTime.now().minusDays(1))
+                    .build();
+                groupMessageRepository.save(leaderMsg);
+            }
+        }
+    }
+
 }
