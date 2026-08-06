@@ -96,25 +96,25 @@ public class AdminController {
 
     // Analytics & Logs & Settings
     @GetMapping("/analytics")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AdminAnalyticsDTO> getAnalytics() {
         return ResponseEntity.ok(adminService.getAnalytics());
     }
 
     @GetMapping("/audit-logs")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<AuditLogDTO>> getAuditLogs() {
         return ResponseEntity.ok(adminService.getAuditLogs());
     }
 
     @GetMapping("/settings")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<SystemSettingDTO>> getSettings() {
         return ResponseEntity.ok(adminService.getSettings());
     }
 
     @PatchMapping("/settings/{key}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<SystemSettingDTO> updateSetting(@PathVariable String key, @RequestBody Map<String, String> body) {
         String value = body.get("value");
         return ResponseEntity.ok(adminService.updateSetting(key, value));

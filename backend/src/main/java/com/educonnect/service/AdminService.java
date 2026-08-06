@@ -42,17 +42,29 @@ public class AdminService {
         long questionCount = questionRepository.count();
         long groupCount = studyGroupRepository.count();
 
-        // Generate dummy chart data for the last 7 days (in a real app, group by date from DB)
+        // Generate real chart data for the last 7 days
         List<Map<String, Object>> chartData = new ArrayList<>();
         java.time.LocalDate today = java.time.LocalDate.now();
+        
+        List<com.educonnect.model.Question> allQuestions = questionRepository.findAll();
+        List<com.educonnect.model.User> allUsers = userRepository.findAll();
+
         for (int i = 6; i >= 0; i--) {
             java.time.LocalDate date = today.minusDays(i);
             String dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
+            
+            long questionsOnDay = allQuestions.stream()
+                .filter(q -> q.getCreatedAt() != null && q.getCreatedAt().toLocalDate().equals(date))
+                .count();
+                
+            long usersOnDay = allUsers.stream()
+                .filter(u -> u.getCreatedAt() != null && u.getCreatedAt().toLocalDate().equals(date))
+                .count();
+
             Map<String, Object> point = new HashMap<>();
             point.put("name", dayName);
-            // Just some random realistic data based on actual counts to make the chart look nice
-            point.put("questions", 2 + (int)(Math.random() * 8)); 
-            point.put("users", 1 + (int)(Math.random() * 5));
+            point.put("questions", questionsOnDay); 
+            point.put("users", usersOnDay);
             chartData.add(point);
         }
 

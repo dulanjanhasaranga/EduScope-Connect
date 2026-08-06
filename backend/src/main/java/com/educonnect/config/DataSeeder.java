@@ -345,7 +345,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I understand that FacultyLens uses predictive analytics to balance teaching and research, but service contributions (like committees or advising) vary wildly in effort. Does the platform allow for custom weighting of different service activities, or does it use a standardized model?")
                 .author(users.get(1 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(7).minusHours(10))
+                .createdAt(LocalDateTime.now().minusDays(3).minusHours(10))
                 .build();
         
         Set<Tag> tags0 = new java.util.HashSet<>();
@@ -364,7 +364,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I've tried using standard ChatGPT for summarizing dense biology papers, but it often hallucinates or misses key methodological details. Is Bevinzey's underlying LLM specifically fine-tuned for academic and scientific texts?")
                 .author(users.get(2 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(18).minusHours(12))
+                .createdAt(LocalDateTime.now().minusDays(6).minusHours(12))
                 .build();
         
         Set<Tag> tags1 = new java.util.HashSet<>();
@@ -383,7 +383,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I am looking into evaluating some custom LLMs we deployed for student advising. I keep seeing 'G-Eval' mentioned in the Evalometrics documentation. Can someone explain how it differs from traditional ROUGE or BLEU scores?")
                 .author(users.get(4 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(22).minusHours(2))
+                .createdAt(LocalDateTime.now().minusDays(5).minusHours(2))
                 .build();
         
         Set<Tag> tags2 = new java.util.HashSet<>();
@@ -402,7 +402,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("StudySocius has been amazing for keeping my assignment streaks alive. However, I want to sync my study blocks directly to Google Calendar. Is there a two-way sync available currently?")
                 .author(users.get(5 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(19).minusHours(9))
+                .createdAt(LocalDateTime.now().minusDays(1).minusHours(9))
                 .build();
         
         Set<Tag> tags3 = new java.util.HashSet<>();
@@ -419,7 +419,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I am struggling with the parenteral nutrition (TPN) calculations for my upcoming NAPLEX. Which specific video tutorials or question banks in RxCalculations are best for this?")
                 .author(users.get(3 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(20).minusHours(3))
+                .createdAt(LocalDateTime.now().minusDays(2).minusHours(3))
                 .build();
         
         Set<Tag> tags4 = new java.util.HashSet<>();
@@ -438,7 +438,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("With tools like Bevinzey generating answers, how do educators ensure that students are actually learning the material and not just copy-pasting AI outputs for their assignments?")
                 .author(users.get(1 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(2).minusHours(7))
+                .createdAt(LocalDateTime.now().minusDays(0).minusHours(7))
                 .build();
         
         Set<Tag> tags5 = new java.util.HashSet<>();
@@ -457,7 +457,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("Our university has strict data privacy laws (FERPA compliance) and we cannot send student interaction data to OpenAI or Anthropic APIs. Can Evalometrics be configured to use local open-source models (like Llama 3) for its evaluation metrics?")
                 .author(users.get(4 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(5).minusHours(6))
+                .createdAt(LocalDateTime.now().minusDays(2).minusHours(6))
                 .build();
         
         Set<Tag> tags6 = new java.util.HashSet<>();
@@ -476,7 +476,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("My StudySocius productivity score dropped slightly over the weekend even though I completed all my tasks. What factors go into this calculation? Does it penalize taking rest days?")
                 .author(users.get(5 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(17).minusHours(20))
+                .createdAt(LocalDateTime.now().minusDays(0).minusHours(20))
                 .build();
         
         Set<Tag> tags7 = new java.util.HashSet<>();
@@ -493,7 +493,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("Our institution only has about 150 faculty members. The predictive models in FacultyLens seem geared towards massive R1 research universities. Does the AI perform well with smaller datasets?")
                 .author(users.get(1 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(18).minusHours(4))
+                .createdAt(LocalDateTime.now().minusDays(0).minusHours(4))
                 .build();
         
         Set<Tag> tags8 = new java.util.HashSet<>();
@@ -510,7 +510,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I'm a med student considering using Bevinzey to automatically generate Anki flashcards from my lecture PDFs. Has anyone tested its accuracy for dense medical topics like neuroanatomy?")
                 .author(users.get(3 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(17).minusHours(22))
+                .createdAt(LocalDateTime.now().minusDays(2).minusHours(22))
                 .build();
         
         Set<Tag> tags9 = new java.util.HashSet<>();
@@ -529,7 +529,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I constantly get confused when mixing two different strengths of a compound. Does RxCalculations teach both the alligation alternate method and the standard algebraic method?")
                 .author(users.get(2 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(29).minusHours(21))
+                .createdAt(LocalDateTime.now().minusDays(1).minusHours(21))
                 .build();
         
         Set<Tag> tags10 = new java.util.HashSet<>();
@@ -546,7 +546,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I want to evaluate a student-support chatbot. In addition to accuracy, I want to measure 'empathy' and 'tone'. How easy is it to define these custom metrics in Evalometrics?")
                 .author(users.get(4 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(14).minusHours(13))
+                .createdAt(LocalDateTime.now().minusDays(6).minusHours(13))
                 .build();
         
         Set<Tag> tags11 = new java.util.HashSet<>();
@@ -563,7 +563,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("If I upload two papers that directly contradict each other, how does Bevinzey's Q&A generation handle the discrepancy? Does it hallucinate a middle ground, or point out the conflict?")
                 .author(users.get(2 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(21).minusHours(5))
+                .createdAt(LocalDateTime.now().minusDays(4).minusHours(5))
                 .build();
         
         Set<Tag> tags12 = new java.util.HashSet<>();
@@ -582,7 +582,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("Transparency is a big issue at our university. If department chairs are using FacultyLens to assign workloads, do individual faculty members get a dashboard to see their own metrics and predictions?")
                 .author(users.get(1 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(17).minusHours(11))
+                .createdAt(LocalDateTime.now().minusDays(1).minusHours(11))
                 .build();
         
         Set<Tag> tags13 = new java.util.HashSet<>();
@@ -599,7 +599,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I'm trying to convince my study group to switch to StudySocius. Besides task tracking, what gamification features does it have to keep people motivated?")
                 .author(users.get(5 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(24).minusHours(8))
+                .createdAt(LocalDateTime.now().minusDays(0).minusHours(8))
                 .build();
         
         Set<Tag> tags14 = new java.util.HashSet<>();
@@ -616,7 +616,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I know RxCalculations is geared towards pharmacy students, but I am in nursing school studying for the NCLEX. Would the dosage calculation modules be overkill, or still useful for me?")
                 .author(users.get(3 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(17).minusHours(22))
+                .createdAt(LocalDateTime.now().minusDays(2).minusHours(22))
                 .build();
         
         Set<Tag> tags15 = new java.util.HashSet<>();
@@ -635,7 +635,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("We want to run LLM evaluations automatically every time we push a prompt update to GitHub. Does Evalometrics have integrations for GitHub Actions or Jenkins?")
                 .author(users.get(4 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(26).minusHours(5))
+                .createdAt(LocalDateTime.now().minusDays(4).minusHours(5))
                 .build();
         
         Set<Tag> tags16 = new java.util.HashSet<>();
@@ -654,7 +654,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I use Obsidian for my 'Second Brain'. Is there a seamless way to export the Markdown summaries and Q&A pairs generated by Bevinzey directly into Obsidian or Notion?")
                 .author(users.get(5 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(27).minusHours(5))
+                .createdAt(LocalDateTime.now().minusDays(5).minusHours(5))
                 .build();
         
         Set<Tag> tags17 = new java.util.HashSet<>();
@@ -671,7 +671,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("When using AI tools in the EduScope ecosystem to assist with grading or evaluating student input, how do you mitigate algorithmic bias against non-native English speakers?")
                 .author(users.get(1 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(11).minusHours(23))
+                .createdAt(LocalDateTime.now().minusDays(5).minusHours(23))
                 .build();
         
         Set<Tag> tags18 = new java.util.HashSet<>();
@@ -690,7 +690,7 @@ public class DataSeeder implements CommandLineRunner {
                 .body("Can FacultyLens automatically pull teaching workload data (like number of students, assignments graded) directly from Canvas or Blackboard via API?")
                 .author(users.get(2 % users.size()))
                 .voteCount(0)
-                .createdAt(LocalDateTime.now().minusDays(15).minusHours(23))
+                .createdAt(LocalDateTime.now().minusDays(4).minusHours(23))
                 .build();
         
         Set<Tag> tags19 = new java.util.HashSet<>();
@@ -1396,7 +1396,7 @@ public class DataSeeder implements CommandLineRunner {
             if (admin == null) return;
             
             List<AuditLog> logs = Arrays.asList(
-                    AuditLog.builder().action("UPDATED_SETTING").entityName("SystemSetting").entityId(1L).performedBy(admin).details("Changed MAINTENANCE_MODE from true to false").timestamp(LocalDateTime.now().minusDays(1)).build(),
+                    AuditLog.builder().action("UPDATED_SETTING").entityName("SystemSetting").entityId(1L).performedBy(admin).details("Changed MAINTENANCE_MODE from true to false").timestamp(LocalDateTime.now().minusDays(0)).build(),
                     AuditLog.builder().action("DELETED_QUESTION").entityName("Question").entityId(99L).performedBy(admin).details("Deleted spam question 'buy cheap watches'").timestamp(LocalDateTime.now().minusHours(12)).build(),
                     AuditLog.builder().action("PROMOTED_USER").entityName("User").entityId(3L).performedBy(admin).details("Promoted user erodriguez@research.edu to LEADER role").timestamp(LocalDateTime.now().minusHours(5)).build(),
                     AuditLog.builder().action("CREATED_ECOSYSTEM_APP").entityName("EcosystemProduct").entityId(5L).performedBy(admin).details("Added RxCalculations product").timestamp(LocalDateTime.now().minusMinutes(30)).build()
