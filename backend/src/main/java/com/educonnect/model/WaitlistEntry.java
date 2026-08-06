@@ -2,7 +2,6 @@ package com.educonnect.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -24,8 +23,14 @@ public class WaitlistEntry {
 
     @Column(nullable = false, name = "product_id")
     private String productId;
-
-    @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            if (createdAt == null) createdAt = LocalDateTime.now();
+        }
+    }
 }

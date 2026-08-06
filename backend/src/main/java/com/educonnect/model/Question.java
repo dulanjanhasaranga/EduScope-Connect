@@ -2,8 +2,6 @@ package com.educonnect.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -46,12 +44,8 @@ public class Question {
     @Column(name = "vote_count", nullable = false)
     @Builder.Default
     private Integer voteCount = 0;
-
-    @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
-
-    @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
@@ -71,5 +65,21 @@ public class Question {
 
     public enum Status {
         SOLVED, UNSOLVED
+    }
+
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            if (createdAt == null) createdAt = LocalDateTime.now();
+        }
+        if (updatedAt == null) {
+            updatedAt = LocalDateTime.now();
+        }
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 }

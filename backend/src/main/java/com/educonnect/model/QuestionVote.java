@@ -2,7 +2,6 @@ package com.educonnect.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -32,8 +31,14 @@ public class QuestionVote {
     @Enumerated(EnumType.STRING)
     @Column(name = "vote_type", nullable = false)
     private Vote.VoteType voteType;
-
-    @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            if (createdAt == null) createdAt = LocalDateTime.now();
+        }
+    }
 }
