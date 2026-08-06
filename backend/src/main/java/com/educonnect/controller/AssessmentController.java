@@ -34,6 +34,16 @@ public class AssessmentController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/my")
+    @PreAuthorize("hasAuthority('system:config') or hasAuthority('leaders:verify') or hasRole('LEADER')")
+    public ResponseEntity<List<Assessment>> getMyAssessments() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User author = userRepository.findByEmail(email).orElse(null);
+        if (author == null) return ResponseEntity.badRequest().build();
+        
+        return ResponseEntity.ok(assessmentRepository.findByAuthorOrderByCreatedAtDesc(author));
+    }
+
     @PostMapping
     @PreAuthorize("hasAuthority('system:config') or hasAuthority('leaders:verify')")
     public ResponseEntity<Assessment> createAssessment(@RequestBody Assessment assessment) {

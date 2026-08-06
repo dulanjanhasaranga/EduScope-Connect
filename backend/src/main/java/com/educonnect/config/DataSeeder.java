@@ -68,6 +68,9 @@ public class DataSeeder implements CommandLineRunner {
     @Autowired
     private SystemSettingRepository systemSettingRepository;
 
+    @Autowired
+    private com.educonnect.repository.AssessmentRepository assessmentRepository;
+
     @Override
     public void run(String... args) throws Exception {
         seedSystemSettings();
@@ -75,6 +78,8 @@ public class DataSeeder implements CommandLineRunner {
         seedEcosystemProducts();
         seedTags();
         seedQuestionsAndAnswers();
+        seedHistoricalAnswersForLeaders();
+        seedAssessments();
         seedAuditLogs();
     }
 
@@ -1404,5 +1409,76 @@ public class DataSeeder implements CommandLineRunner {
             auditLogRepository.saveAll(logs);
         }
     }
+    private void seedHistoricalAnswersForLeaders() {
+        System.out.println("Seeding historical answers for leaders...");
+        User admin = userRepository.findByEmail("dulanjan.connect@gmail.com").orElse(null);
+        if (admin == null) return;
+        
+        // We only want to seed once
+        if (answerRepository.findByAuthor(admin).size() > 10) return;
+        
+        Question dummyQ = questionRepository.findAll().get(0);
 
+        // Spread answers over the past 6 months to populate the engagement chart
+        for (int i = 0; i < 6; i++) {
+            int answersInMonth = 15 + (int)(Math.random() * 30); // 15 to 45 answers per month
+            for (int j = 0; j < answersInMonth; j++) {
+                Answer a = Answer.builder()
+                        .body("Historical answer for month offset " + i)
+                        .author(admin)
+                        .question(dummyQ)
+                        .isAccepted(false)
+                        .voteCount(0)
+                        .createdAt(LocalDateTime.now().minusMonths(i).minusDays((int)(Math.random() * 28)))
+                        .build();
+                answerRepository.save(a);
+            }
+        }
+    }
+
+    private void seedAssessments() {
+        if (assessmentRepository.count() > 0) return;
+        System.out.println("Seeding assessments...");
+        User admin = userRepository.findByEmail("dulanjan.connect@gmail.com").orElse(null);
+        if (admin == null) return;
+
+        com.educonnect.model.Assessment a1 = com.educonnect.model.Assessment.builder()
+            .title("Advanced Pharmacokinetics Quiz")
+            .description("Test your knowledge on half-life, clearance, and Vd.")
+            .author(admin)
+            .build();
+            
+        a1.setQuestions(Arrays.asList(
+            com.educonnect.model.AssessmentQuestion.builder()
+                .text("What happens to half-life if clearance decreases and Vd is constant?")
+                .options(Arrays.asList("Increases", "Decreases", "Stays the same"))
+                .correctOptionIndex(0)
+                .assessment(a1)
+                .build(),
+            com.educonnect.model.AssessmentQuestion.builder()
+                .text("Which order kinetics exhibits a constant amount of drug eliminated per unit time?")
+                .options(Arrays.asList("First-order", "Zero-order", "Second-order"))
+                .correctOptionIndex(1)
+                .assessment(a1)
+                .build()
+        ));
+        
+        com.educonnect.model.Assessment a2 = com.educonnect.model.Assessment.builder()
+            .title("Clinical Pathophysiology Exam")
+            .description("Comprehensive exam on disease mechanisms.")
+            .author(admin)
+            .build();
+            
+        a2.setQuestions(Arrays.asList(
+            com.educonnect.model.AssessmentQuestion.builder()
+                .text("What is the hallmark of restrictive lung disease?")
+                .options(Arrays.asList("Decreased FEV1/FVC", "Increased TLC", "Decreased TLC"))
+                .correctOptionIndex(2)
+                .assessment(a2)
+                .build()
+        ));
+        
+        assessmentRepository.save(a1);
+        assessmentRepository.save(a2);
+    }
 }

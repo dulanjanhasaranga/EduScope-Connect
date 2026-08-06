@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 import api from '../utils/api';
-import { BarChart3, Users, Award, BookOpen, Plus } from 'lucide-react';
+import { BarChart3, Users, Award, BookOpen, Plus, Calendar } from 'lucide-react';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { showToast } from '../components/ToastContainer';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function LeaderDashboard() {
   const { user } = useAuth();
   const [analytics, setAnalytics] = useState(null);
+  const [assessments, setAssessments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('analytics');
 
@@ -20,10 +22,14 @@ export default function LeaderDashboard() {
 
   const fetchAnalytics = async () => {
     try {
-      const res = await api.get('/analytics/leader');
-      setAnalytics(res.data);
+      const [analyticsRes, assessmentsRes] = await Promise.all([
+        api.get('/analytics/leader'),
+        api.get('/assessments/my')
+      ]);
+      setAnalytics(analyticsRes.data);
+      setAssessments(assessmentsRes.data);
     } catch (err) {
-      showToast('Failed to load analytics', 'error');
+      showToast('Failed to load dashboard data', 'error');
     } finally {
       setLoading(false);
     }
@@ -96,10 +102,24 @@ export default function LeaderDashboard() {
             </div>
           </div>
 
-          <div className="card min-h-[300px] flex flex-col items-center justify-center text-gray-500 bg-gray-50/50 border-dashed border-2">
-            <BarChart3 className="w-12 h-12 text-gray-300 mb-4" />
-            <p className="font-medium">Monthly Engagement Chart</p>
-            <p className="text-sm mt-2 max-w-sm text-center">FacultyLens-style detailed engagement metrics (Recharts) will render here based on {JSON.stringify(analytics?.monthlyEngagement)}</p>
+          <div className="card min-h-[300px] flex flex-col bg-white border border-gray-200">
+            <h3 className="font-bold text-gray-800 mb-6 flex items-center gap-2">
+              <BarChart3 className="w-5 h-5 text-blue-500" /> Monthly Engagement
+            </h3>
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={analytics?.monthlyEngagement || []}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#6B7280'}} />
+                  <YAxis axisLine={false} tickLine={false} tick={{fill: '#6B7280'}} />
+                  <Tooltip 
+                    cursor={{fill: '#F3F4F6'}}
+                    contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}}
+                  />
+                  <Bar dataKey="value" fill="#3B82F6" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div>
       )}
@@ -112,10 +132,29 @@ export default function LeaderDashboard() {
               <Plus className="w-4 h-4" /> Create New
             </button>
           </div>
-          <div className="card border-dashed border-2 bg-gray-50 flex flex-col items-center justify-center p-12 text-gray-500">
-            <BookOpen className="w-12 h-12 text-gray-300 mb-3" />
-            <p>You haven't created any assessments yet.</p>
-          </div>
+          {assessments.length === 0 ? (
+            <div className="card border-dashed border-2 bg-gray-50 flex flex-col items-center justify-center p-12 text-gray-500">
+              <BookOpen className="w-12 h-12 text-gray-300 mb-3" />
+              <p>You haven't created any assessments yet.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {assessments.map((assessment) => (
+                <div key={assessment.id} className="card hover:shadow-md transition-shadow cursor-pointer bg-white border border-gray-100">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-bold text-lg text-gray-900">{assessment.title}</h3>
+                    <span className="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded font-medium flex items-center gap-1">
+                      {assessment.questions?.length || 0} Questions
+                    </span>
+                  </div>
+                  <p className="text-gray-500 text-sm mb-4 line-clamp-2">{assessment.description}</p>
+                  <div className="text-xs text-gray-400 flex items-center gap-1">
+                    <Calendar className="w-3 h-3" /> Created {new Date(assessment.createdAt).toLocaleDateString()}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
