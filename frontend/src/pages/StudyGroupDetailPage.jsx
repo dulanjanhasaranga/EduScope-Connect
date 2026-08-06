@@ -6,7 +6,8 @@ import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { showToast } from '../components/ToastContainer';
-import { Send, ArrowLeft, Users, LogOut } from 'lucide-react';
+import { Send, ArrowLeft, Users, LogOut, MessageSquare, HelpCircle } from 'lucide-react';
+import QuestionCard from '../components/QuestionCard';
 
 export default function StudyGroupDetailPage() {
   const { id } = useParams();
@@ -16,6 +17,8 @@ export default function StudyGroupDetailPage() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('chat');
+  const [relatedQuestions, setRelatedQuestions] = useState([]);
   const stompClient = useRef(null);
   const messagesEndRef = useRef(null);
 
@@ -48,6 +51,17 @@ export default function StudyGroupDetailPage() {
       // Fetch message history
       const msgRes = await api.get(`/groups/${id}/messages`);
       setMessages(msgRes.data);
+      
+      // Map group category to question tag
+      let tagMap = {
+        'Computer Science': 'machine-learning',
+        'Medicine': 'biology',
+        'Mathematics': 'mathematics'
+      };
+      const queryTag = tagMap[foundGroup.category] || '';
+      
+      const qRes = await api.get(`/questions?tag=${queryTag}&size=20`);
+      setRelatedQuestions(qRes.data.content || []);
       
       connectWebSocket();
     } catch (err) {
@@ -134,9 +148,35 @@ export default function StudyGroupDetailPage() {
         </button>
       </div>
 
-      {/* Chat Area */}
+      {/* Tabs */}
+      <div className="flex border-b bg-white shrink-0">
+        <button
+          onClick={() => setActiveTab('chat')}
+          className={`flex-1 flex items-center justify-center gap-2 py-3 font-medium transition-colors ${
+            activeTab === 'chat' 
+              ? 'text-orange-600 border-b-2 border-orange-600' 
+              : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+          }`}
+        >
+          <MessageSquare className="w-4 h-4" /> Live Chat
+        </button>
+        <button
+          onClick={() => setActiveTab('questions')}
+          className={`flex-1 flex items-center justify-center gap-2 py-3 font-medium transition-colors ${
+            activeTab === 'questions' 
+              ? 'text-orange-600 border-b-2 border-orange-600' 
+              : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+          }`}
+        >
+          <HelpCircle className="w-4 h-4" /> Group Q&A
+        </button>
+      </div>
+
+      {/* Content Area */}
       <div className="flex-1 bg-gray-50 overflow-y-auto p-4 space-y-4 rounded-b-2xl shadow-sm border-x border-b">
-        {messages.length === 0 ? (
+        {activeTab === 'chat' ? (
+          <>
+            {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-gray-400 space-y-2">
             <Users className="w-12 h-12 opacity-50" />
             <p>No messages yet. Say hello!</p>
@@ -166,9 +206,20 @@ export default function StudyGroupDetailPage() {
           })
         )}
         <div ref={messagesEndRef} />
+          </>
+        ) : (
+          <div className="space-y-4">
+            {relatedQuestions.length === 0 ? (
+              <div className="text-center text-gray-500 py-10">No related questions found for this group.</div>
+            ) : (
+              relatedQuestions.map(q => <QuestionCard key={q.id} question={q} />)
+            )}
+          </div>
+        )}
       </div>
 
       {/* Message Input */}
+      {activeTab === 'chat' && (
       <div className="mt-4 shrink-0">
         <form onSubmit={handleSendMessage} className="relative">
           <input
@@ -187,6 +238,7 @@ export default function StudyGroupDetailPage() {
           </button>
         </form>
       </div>
+      )}
     </div>
   );
 }

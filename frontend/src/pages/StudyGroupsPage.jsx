@@ -66,7 +66,8 @@ export default function StudyGroupsPage() {
     }
 
     try {
-      await api.post(`/groups/${group.id}/join`);
+      const res = await api.post(`/groups/${group.id}/join`);
+      setGroups(groups.map(g => g.id === group.id ? res.data : g));
       showToast(`Joined ${group.name}!`, 'success');
       navigate(`/groups/${group.id}`);
     } catch (err) {
