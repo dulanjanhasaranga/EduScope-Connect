@@ -14,6 +14,7 @@ import ProfilePage from "./pages/ProfilePage";
 import AssessmentsPage from "./pages/AssessmentsPage";
 import LeaderDashboard from "./pages/LeaderDashboard";
 import StudyGroupsPage from "./pages/StudyGroupsPage";
+import StudyGroupDetailPage from "./pages/StudyGroupDetailPage";
 import RxCalculationsPage from "./pages/RxCalculationsPage";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AnalyticsDashboard from "./pages/admin/AnalyticsDashboard";
@@ -51,6 +52,7 @@ function AppRoutes() {
         <Route path="/leaderboard" element={<LeaderboardPage />} />
         <Route path="/assessments" element={<AssessmentsPage />} />
         <Route path="/groups" element={<StudyGroupsPage />} />
+        <Route path="/groups/:id" element={<PrivateRoute><StudyGroupDetailPage /></PrivateRoute>} />
         <Route path="/rxcalculations" element={<RxCalculationsPage />} />
         <Route path="/resources" element={<GoogleSearchPage />} />
         <Route path="/ecosystem" element={<EcosystemPage />} />

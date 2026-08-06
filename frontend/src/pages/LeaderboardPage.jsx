@@ -321,7 +321,7 @@ export default function LeaderboardPage() {
           </div>
 
           <div className="divide-y divide-gray-100/80">
-            {users.map((user, index) => {
+            {users.slice(0, 5).map((user, index) => {
               const tier = getRankTier(user.reputationScore);
               const isCurrentUser = isAuthenticated && user.id === currentUser?.id;
 

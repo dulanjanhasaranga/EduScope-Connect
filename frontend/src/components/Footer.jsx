@@ -20,13 +20,13 @@ export default function Footer() {
               Empowering learners, educators, and institutions with AI-driven tools, advanced analytics, and collaborative knowledge sharing.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="h-10 w-10 rounded-full bg-[#004878] flex items-center justify-center hover:bg-primary-500 transition-colors">
+              <a href="https://www.linkedin.com/company/eduscope-global" target="_blank" rel="noopener noreferrer" className="h-10 w-10 rounded-full bg-[#004878] flex items-center justify-center hover:bg-primary-500 transition-colors">
                 <Linkedin className="h-5 w-5" />
               </a>
-              <a href="#" className="h-10 w-10 rounded-full bg-[#004878] flex items-center justify-center hover:bg-primary-500 transition-colors">
+              <a href="https://www.facebook.com/eduscopeglobal" target="_blank" rel="noopener noreferrer" className="h-10 w-10 rounded-full bg-[#004878] flex items-center justify-center hover:bg-primary-500 transition-colors">
                 <Facebook className="h-5 w-5" />
               </a>
-              <a href="#" className="h-10 w-10 rounded-full bg-[#004878] flex items-center justify-center hover:bg-primary-500 transition-colors">
+              <a href="https://www.youtube.com/@eduscopeglobal" target="_blank" rel="noopener noreferrer" className="h-10 w-10 rounded-full bg-[#004878] flex items-center justify-center hover:bg-primary-500 transition-colors">
                 <Youtube className="h-5 w-5" />
               </a>
             </div>

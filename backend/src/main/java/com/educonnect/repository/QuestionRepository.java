@@ -17,7 +17,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     @Query("SELECT DISTINCT q FROM Question q LEFT JOIN FETCH q.tags WHERE q.id = :id")
     Optional<Question> findByIdWithTags(@Param("id") Long id);
 
-    @Query("SELECT q FROM Question q LEFT JOIN q.tags t WHERE " +
+    @Query("SELECT DISTINCT q FROM Question q LEFT JOIN q.tags t WHERE " +
            "(:search IS NULL OR LOWER(q.title) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(q.body) LIKE LOWER(CONCAT('%', :search, '%'))) AND " +
            "(:tag IS NULL OR t.name = :tag) AND " +
            "(:status IS NULL OR q.status = :status)")

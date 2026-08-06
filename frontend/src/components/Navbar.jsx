@@ -74,11 +74,11 @@ export default function Navbar() {
   const redirectToLogin = (from) => `/login?redirect=${encodeURIComponent(from || location.pathname)}`;
 
   const ecosystemApps = [
-    { name: 'Bevinzey', icon: Sparkles, color: 'text-purple-600', bg: 'bg-purple-100', path: '/resources' },
-    { name: 'Evalometrics', icon: CheckSquare, color: 'text-emerald-600', bg: 'bg-emerald-100', path: '/assessments' },
-    { name: 'FacultyLens', icon: BarChart3, color: 'text-blue-600', bg: 'bg-blue-100', path: '/leader' },
-    { name: 'StudySocius', icon: Users2, color: 'text-orange-600', bg: 'bg-orange-100', path: '/groups' },
-    { name: 'RxCalculations', icon: Pill, color: 'text-red-600', bg: 'bg-red-100', path: '/rxcalculations' },
+    { name: 'FacultyLens', description: 'AI insights & predictive analytics', icon: BarChart3, color: 'text-blue-600', bg: 'bg-blue-100', path: '/ecosystem#facultylens' },
+    { name: 'Bevinzey', description: 'Smart summarization & Q&A generation', icon: Sparkles, color: 'text-purple-600', bg: 'bg-purple-100', path: '/ecosystem#bevinzey' },
+    { name: 'Evalometrics', description: 'LLM evaluation & metrics framework', icon: CheckSquare, color: 'text-emerald-600', bg: 'bg-emerald-100', path: '/ecosystem#evalometrics' },
+    { name: 'StudySocius', description: 'Productivity & social learning network', icon: Users2, color: 'text-orange-600', bg: 'bg-orange-100', path: '/ecosystem#studysocius' },
+    { name: 'RxCalculations', description: 'Pharmacy NAPLEX calculations prep', icon: Pill, color: 'text-red-600', bg: 'bg-red-100', path: '/ecosystem#rxcalculations' },
   ];
 
   return (
@@ -115,25 +115,43 @@ export default function Navbar() {
               </button>
 
               {showAppsMenu && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-gray-200 p-4 z-50 animate-fade-in">
-                  <div className="grid grid-cols-3 gap-4">
+                <div className="absolute right-0 mt-2 w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 p-3 z-50 animate-fade-in origin-top-right">
+                  <div className="p-3 mb-2 border-b border-gray-100">
+                    <h3 className="font-bold text-gray-900">EduScope Ecosystem</h3>
+                    <p className="text-xs text-gray-500 mt-1">Explore our suite of intelligent educational tools.</p>
+                  </div>
+                  <div className="flex flex-col gap-1 max-h-[60vh] overflow-y-auto custom-scrollbar pr-1">
                     {ecosystemApps.map((app) => (
                       <Link 
                         key={app.name} 
                         to={app.path}
-                        onClick={() => setShowAppsMenu(false)}
-                        className="flex flex-col items-center gap-2 p-3 hover:bg-gray-50 rounded-xl transition-colors text-center group"
+                        onClick={(e) => {
+                          setShowAppsMenu(false);
+                          if (location.pathname === '/ecosystem') {
+                            const id = app.path.split('#')[1];
+                            const element = document.getElementById(id);
+                            if (element) {
+                               e.preventDefault();
+                               element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                               window.history.pushState(null, '', app.path);
+                            }
+                          }
+                        }}
+                        className="flex items-start gap-4 p-3 hover:bg-gray-50 rounded-xl transition-all group"
                       >
-                        <div className={`w-12 h-12 flex items-center justify-center rounded-xl ${app.bg} group-hover:scale-110 transition-transform`}>
+                        <div className={`w-12 h-12 shrink-0 flex items-center justify-center rounded-xl ${app.bg} group-hover:scale-110 transition-transform`}>
                           <app.icon className={`h-6 w-6 ${app.color}`} />
                         </div>
-                        <span className="text-xs font-medium text-gray-700">{app.name}</span>
+                        <div>
+                          <span className="text-sm font-bold text-gray-900 group-hover:text-primary-600 transition-colors">{app.name}</span>
+                          <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{app.description}</p>
+                        </div>
                       </Link>
                     ))}
                   </div>
-                  <div className="mt-4 pt-4 border-t border-gray-100 text-center">
-                    <Link to="/ecosystem" className="text-sm font-medium text-primary-600 hover:underline" onClick={() => setShowAppsMenu(false)}>
-                      View All Apps
+                  <div className="mt-2 pt-2 border-t border-gray-100">
+                    <Link to="/ecosystem" className="block w-full text-center py-2.5 bg-gray-50 hover:bg-gray-100 rounded-xl text-sm font-bold text-gray-700 transition-colors" onClick={() => setShowAppsMenu(false)}>
+                      View All Applications
                     </Link>
                   </div>
                 </div>
@@ -258,8 +276,25 @@ export default function Navbar() {
             <div className="pt-4 pb-2">
               <p className="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Ecosystem Apps</p>
               {ecosystemApps.map(app => (
-                <Link key={app.name} to={app.path} className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-gray-700 hover:bg-gray-50">
-                  <app.icon className={`h-5 w-5 ${app.color}`} /> {app.name}
+                <Link key={app.name} to={app.path} onClick={(e) => {
+                          setMobileMenuOpen(false);
+                          if (location.pathname === '/ecosystem') {
+                            const id = app.path.split('#')[1];
+                            const element = document.getElementById(id);
+                            if (element) {
+                               e.preventDefault();
+                               element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                               window.history.pushState(null, '', app.path);
+                            }
+                          }
+                        }} className="flex items-start gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-50 group">
+                  <div className={`w-10 h-10 shrink-0 flex items-center justify-center rounded-lg ${app.bg}`}>
+                    <app.icon className={`h-5 w-5 ${app.color}`} /> 
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm group-hover:text-primary-600 transition-colors">{app.name}</div>
+                    <div className="text-xs text-gray-500">{app.description}</div>
+                  </div>
                 </Link>
               ))}
             </div>

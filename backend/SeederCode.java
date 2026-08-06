@@ -1,318 +1,3 @@
-package com.educonnect.config;
-
-import com.educonnect.model.EcosystemProduct;
-import com.educonnect.model.Tag;
-import com.educonnect.repository.EcosystemProductRepository;
-import com.educonnect.repository.TagRepository;
-import com.educonnect.model.User;
-import com.educonnect.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
-import com.educonnect.model.Question;
-import com.educonnect.model.Answer;
-import com.educonnect.model.Vote;
-import com.educonnect.model.Vote.VoteType;
-import com.educonnect.model.QuestionVote;
-import com.educonnect.repository.QuestionRepository;
-import com.educonnect.repository.AnswerRepository;
-import com.educonnect.repository.VoteRepository;
-import com.educonnect.repository.QuestionVoteRepository;
-import org.springframework.context.annotation.Profile;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.stream.Collectors;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-@Component
-@Profile("!prod")
-public class DataSeeder implements CommandLineRunner {
-
-    @Autowired
-    private EcosystemProductRepository ecosystemProductRepository;
-
-    @Autowired
-    private TagRepository tagRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private QuestionRepository questionRepository;
-
-    @Autowired
-    private AnswerRepository answerRepository;
-
-    @Autowired
-    private VoteRepository voteRepository;
-
-    @Autowired
-    private QuestionVoteRepository questionVoteRepository;
-
-    @Override
-    public void run(String... args) throws Exception {
-        seedUsers();
-        seedEcosystemProducts();
-        seedTags();
-        seedQuestionsAndAnswers();
-    }
-
-    private void seedUsers() {
-        java.util.Optional<User> dulanjanOpt = userRepository.findByEmail("dulanjan.connect@gmail.com");
-        if (!dulanjanOpt.isPresent()) {
-            User dulanjanAdmin = User.builder()
-                    .username("Dulanjan")
-                    .email("dulanjan.connect@gmail.com")
-                    .passwordHash(passwordEncoder.encode("Password123!"))
-                    .role(User.Role.ADMIN)
-                    .bio("Super Administrator")
-                    .avatarUrl("https://ui-avatars.com/api/?name=Dulanjan&background=0063ce&color=fff")
-                    .reputationScore(1000)
-                    .build();
-            userRepository.save(dulanjanAdmin);
-        } else {
-            User existing = dulanjanOpt.get();
-            if (existing.getRole() != User.Role.ADMIN) {
-                existing.setRole(User.Role.ADMIN);
-                userRepository.save(existing);
-            }
-        }
-
-        if (userRepository.count() <= 1) {
-            // Seed Admin
-            if (!userRepository.findByEmail("admin@eduscope.com").isPresent()) {
-                User admin = User.builder()
-                        .username("admin")
-                        .email("admin@eduscope.com")
-                        .passwordHash(passwordEncoder.encode("admin123"))
-                        .role(User.Role.ADMIN)
-                        .bio("System Administrator")
-                        .avatarUrl("https://ui-avatars.com/api/?name=Admin&background=0063ce&color=fff")
-                        .reputationScore(0)
-                        .build();
-                userRepository.save(admin);
-            }
-
-            // Seed Professional Leaders
-            List<User> leaders = Arrays.asList(
-                    User.builder()
-                            .username("Dr. Sarah Chen")
-                            .email("sarah.chen@university.edu")
-                            .passwordHash(passwordEncoder.encode("password123"))
-                            .role(User.Role.LEADER)
-                            .bio("Professor of Computer Science specializing in AI and Machine Learning.")
-                            .avatarUrl(
-                                    "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&h=150&fit=crop&q=80")
-                            .reputationScore(1540)
-                            .build(),
-                    User.builder()
-                            .username("Prof. M. Johnson")
-                            .email("mjohnson@institute.org")
-                            .passwordHash(passwordEncoder.encode("password123"))
-                            .role(User.Role.LEADER)
-                            .bio("Department Head of Applied Mathematics. Passionate about helping students understand calculus.")
-                            .avatarUrl(
-                                    "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop&q=80")
-                            .reputationScore(850)
-                            .build(),
-                    User.builder()
-                            .username("Elena Rodriguez, PhD")
-                            .email("erodriguez@research.edu")
-                            .passwordHash(passwordEncoder.encode("password123"))
-                            .role(User.Role.STUDENT)
-                            .bio("Postdoctoral researcher in Biochemistry. Happy to answer questions about molecular biology.")
-                            .avatarUrl(
-                                    "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&h=150&fit=crop&q=80")
-                            .reputationScore(430)
-                            .build(),
-                    User.builder()
-                            .username("Dr. Akira Tanaka")
-                            .email("atanaka@medschool.edu")
-                            .passwordHash(passwordEncoder.encode("password123"))
-                            .role(User.Role.STUDENT)
-                            .bio("Clinical Instructor and practicing physician. Medical science enthusiast.")
-                            .avatarUrl(
-                                    "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150&h=150&fit=crop&q=80")
-                            .reputationScore(210)
-                            .build(),
-                    User.builder()
-                            .username("James Miller")
-                            .email("jmiller@tech.com")
-                            .passwordHash(passwordEncoder.encode("password123"))
-                            .role(User.Role.STUDENT)
-                            .bio("Senior Software Engineer. Mentoring the next generation of developers.")
-                            .avatarUrl(
-                                    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&q=80")
-                            .reputationScore(115)
-                            .build(),
-                    User.builder()
-                            .username("Dr. Anita Patel")
-                            .email("apatel@science.edu")
-                            .passwordHash(passwordEncoder.encode("password123"))
-                            .role(User.Role.STUDENT)
-                            .bio("Physics Lecturer. Let's solve complex problems together!")
-                            .avatarUrl(
-                                    "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=150&h=150&fit=crop&q=80")
-                            .reputationScore(65)
-                            .build());
-            userRepository.saveAll(leaders);
-        }
-    }
-
-    private void seedEcosystemProducts() {
-        ecosystemProductRepository.deleteAll();
-        List<EcosystemProduct> products = Arrays.asList(
-                EcosystemProduct.builder()
-                        .id("facultylens")
-                        .name("FacultyLens")
-                        .category("Analytics")
-                        .tagline("Smart Faculty Workload Analytics")
-                        .description(
-                                "Analyze and balance faculty workload across teaching, research, and service with powerful dashboards and AI-generated insights.")
-                        .icon("BarChart3")
-                        .color("from-blue-500 to-cyan-500")
-                        .bgColor("bg-blue-50")
-                        .borderColor("border-blue-200")
-                        .iconColor("text-blue-600")
-                        .imageUrl("/images/ecosystem/facultylens.png")
-                        .features(Arrays.asList(
-                                "Workload Analytics",
-                                "AI-Generated Insights",
-                                "Teaching, Research, & Service Balancing"))
-                        .build(),
-                EcosystemProduct.builder()
-                        .id("bevinzey")
-                        .name("Bevinzey")
-                        .category("Learning")
-                        .tagline("AI-Powered Study Tools")
-                        .description(
-                                "Transform how you learn with AI-powered summarization, question generation, lecture transcription, and personalized tutoring. Built for students, educators, and institutions.")
-                        .icon("Bot")
-                        .color("from-purple-500 to-pink-500")
-                        .bgColor("bg-purple-50")
-                        .borderColor("border-purple-200")
-                        .iconColor("text-purple-600")
-                        .imageUrl("/images/ecosystem/bevinzey.png")
-                        .features(Arrays.asList(
-                                "Smart Document Summarization",
-                                "Auto-generated Practice Questions",
-                                "24/7 AI Tutor Support"))
-                        .build(),
-                EcosystemProduct.builder()
-                        .id("evalometrics")
-                        .name("Evalometrics")
-                        .category("Analytics")
-                        .tagline("LLM Evaluation Framework")
-                        .description(
-                                "The open-source LLM evaluation framework. Offers 50+ state-of-the-art, ready-to-use metrics for evaluating LLMs, including G-Eval, RAG metrics, and custom criteria.")
-                        .icon("GraduationCap")
-                        .color("from-emerald-500 to-teal-500")
-                        .bgColor("bg-emerald-50")
-                        .borderColor("border-emerald-200")
-                        .iconColor("text-emerald-600")
-                        .imageUrl("/images/ecosystem/evalometrics.png")
-                        .features(Arrays.asList(
-                                "50+ SOTA LLM Metrics",
-                                "G-Eval & Custom Criteria",
-                                "End-to-End LLM Evals"))
-                        .build(),
-                EcosystemProduct.builder()
-                        .id("studysocius")
-                        .name("StudySocius")
-                        .category("Social")
-                        .tagline("Productivity Companion")
-                        .description(
-                                "The student's quintessential productivity companion designed to boost efficiency. Accessible on all devices, from PCs and tablets to mobile phones, for streamlined studies.")
-                        .icon("Users2")
-                        .color("from-orange-500 to-amber-500")
-                        .bgColor("bg-orange-50")
-                        .borderColor("border-orange-200")
-                        .iconColor("text-orange-600")
-                        .imageUrl("/images/ecosystem/studysocius.png")
-                        .features(Arrays.asList(
-                                "Study Goals Tracking",
-                                "Assignment Management",
-                                "Cross-Device Accessibility"))
-                        .build(),
-                EcosystemProduct.builder()
-                        .id("rxcalculations")
-                        .name("RxCalculations")
-                        .category("Medical")
-                        .tagline("Pharmacy Calculations")
-                        .description(
-                                "Top quality pharmaceutical calculations resources: online practice question banks, video tutorials, courses, books, apps and private tutoring to help pharmacy students ace the NAPLEX.")
-                        .icon("Pill")
-                        .color("from-red-500 to-rose-500")
-                        .bgColor("bg-red-50")
-                        .borderColor("border-red-200")
-                        .iconColor("text-red-600")
-                        .imageUrl("/images/ecosystem/rxcalculations.png")
-                        .features(Arrays.asList(
-                                "Online Practice Question Banks",
-                                "Video Tutorials & Courses",
-                                "NAPLEX Exam Prep"))
-                        .build());
-        ecosystemProductRepository.saveAll(products);
-    }
-
-    private void seedTags() {
-        Map<String, List<String>> categories = Map.of(
-                "Programming & Tech", Arrays.asList(
-                        "javascript", "python", "java", "c#", "php", "c++", "c", "typescript", "ruby", "swift",
-                        "kotlin", "go", "rust", "dart", "scala", "perl", "haskell", "lua", "r", "matlab", "assembly",
-                        "shell", "powershell",
-                        "react", "angular", "vue", "svelte", "next.js", "nuxt.js", "gatsby", "html", "css", "sass",
-                        "less", "tailwind", "bootstrap", "node.js", "express", "django", "flask", "spring-boot",
-                        "laravel", "asp.net", "ruby-on-rails", "fastapi",
-                        "sql", "mysql", "postgresql", "sqlite", "oracle", "sql-server", "mongodb", "redis", "cassandra",
-                        "dynamodb", "neo4j", "firebase", "supabase", "elasticsearch",
-                        "aws", "azure", "gcp", "docker", "kubernetes", "terraform", "ansible", "jenkins",
-                        "github-actions", "gitlab-ci", "linux", "unix", "bash", "nginx", "apache",
-                        "machine-learning", "deep-learning", "artificial-intelligence", "neural-networks", "nlp",
-                        "computer-vision", "pandas", "numpy", "scikit-learn", "tensorflow", "pytorch", "keras",
-                        "data-analysis", "big-data", "hadoop", "spark",
-                        "algorithms", "data-structures", "operating-systems", "networking", "cryptography", "security",
-                        "distributed-systems", "software-engineering", "design-patterns", "agile", "scrum", "git",
-                        "github", "bitbucket"),
-                "Engineering & Science", Arrays.asList(
-                        "thermodynamics", "fluid-mechanics", "circuit-analysis", "calculus", "linear-algebra",
-                        "physics", "chemistry", "biology", "genetics",
-                        "statistics", "discrete-math", "differential-equations", "materials-science", "robotics",
-                        "aerospace", "civil-engineering", "mechanical-engineering",
-                        "astronomy", "environmental-science", "quantum-mechanics", "organic-chemistry", "biochemistry"),
-                "Medicine & Health", Arrays.asList(
-                        "anatomy", "pharmacology", "physiology", "pathology", "clinical-skills", "public-health",
-                        "nursing", "dentistry",
-                        "neuroscience", "immunology", "microbiology", "epidemiology", "pediatrics", "surgery",
-                        "psychiatry", "cardiology"),
-                "Business & Economics", Arrays.asList(
-                        "microeconomics", "macroeconomics", "accounting", "marketing", "management", "finance",
-                        "entrepreneurship",
-                        "corporate-finance", "investment", "business-analytics", "supply-chain", "human-resources",
-                        "strategy"),
-                "Arts & Humanities", Arrays.asList(
-                        "history", "literature", "philosophy", "sociology", "psychology", "art-history", "linguistics",
-                        "political-science",
-                        "anthropology", "ethics", "theology", "music-theory", "creative-writing", "media-studies",
-                        "geography"));
-
-        categories.forEach((category, tags) -> {
-            tags.forEach(tagName -> {
-                if (tagRepository.findByName(tagName).isEmpty()) {
-                    tagRepository.save(Tag.builder().name(tagName).category(category).build());
-                }
-            });
-        });
-    }
 
     private void seedQuestionsAndAnswers() {
         System.out.println("Cleaning up existing questions, answers, and votes...");
@@ -333,10 +18,11 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I understand that FacultyLens uses predictive analytics to balance teaching and research, but service contributions (like committees or advising) vary wildly in effort. Does the platform allow for custom weighting of different service activities, or does it use a standardized model?")
                 .author(users.get(1 % users.size()))
                 .voteCount(0)
+                .viewCount(103)
                 .createdAt(LocalDateTime.now().minusDays(7).minusHours(10))
                 .build();
         
-        Set<Tag> tags0 = new java.util.HashSet<>();
+        List<Tag> tags0 = new ArrayList<>();
 
         tagRepository.findByName("machine-learning").ifPresent(tags0::add);
 
@@ -352,10 +38,11 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I've tried using standard ChatGPT for summarizing dense biology papers, but it often hallucinates or misses key methodological details. Is Bevinzey's underlying LLM specifically fine-tuned for academic and scientific texts?")
                 .author(users.get(2 % users.size()))
                 .voteCount(0)
+                .viewCount(232)
                 .createdAt(LocalDateTime.now().minusDays(18).minusHours(12))
                 .build();
         
-        Set<Tag> tags1 = new java.util.HashSet<>();
+        List<Tag> tags1 = new ArrayList<>();
 
         tagRepository.findByName("artificial-intelligence").ifPresent(tags1::add);
 
@@ -371,10 +58,11 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I am looking into evaluating some custom LLMs we deployed for student advising. I keep seeing 'G-Eval' mentioned in the Evalometrics documentation. Can someone explain how it differs from traditional ROUGE or BLEU scores?")
                 .author(users.get(4 % users.size()))
                 .voteCount(0)
+                .viewCount(108)
                 .createdAt(LocalDateTime.now().minusDays(22).minusHours(2))
                 .build();
         
-        Set<Tag> tags2 = new java.util.HashSet<>();
+        List<Tag> tags2 = new ArrayList<>();
 
         tagRepository.findByName("deep-learning").ifPresent(tags2::add);
 
@@ -390,10 +78,11 @@ public class DataSeeder implements CommandLineRunner {
                 .body("StudySocius has been amazing for keeping my assignment streaks alive. However, I want to sync my study blocks directly to Google Calendar. Is there a two-way sync available currently?")
                 .author(users.get(5 % users.size()))
                 .voteCount(0)
+                .viewCount(53)
                 .createdAt(LocalDateTime.now().minusDays(19).minusHours(9))
                 .build();
         
-        Set<Tag> tags3 = new java.util.HashSet<>();
+        List<Tag> tags3 = new ArrayList<>();
 
         tagRepository.findByName("software-engineering").ifPresent(tags3::add);
 
@@ -407,10 +96,11 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I am struggling with the parenteral nutrition (TPN) calculations for my upcoming NAPLEX. Which specific video tutorials or question banks in RxCalculations are best for this?")
                 .author(users.get(3 % users.size()))
                 .voteCount(0)
+                .viewCount(192)
                 .createdAt(LocalDateTime.now().minusDays(20).minusHours(3))
                 .build();
         
-        Set<Tag> tags4 = new java.util.HashSet<>();
+        List<Tag> tags4 = new ArrayList<>();
 
         tagRepository.findByName("pharmacology").ifPresent(tags4::add);
 
@@ -426,10 +116,11 @@ public class DataSeeder implements CommandLineRunner {
                 .body("With tools like Bevinzey generating answers, how do educators ensure that students are actually learning the material and not just copy-pasting AI outputs for their assignments?")
                 .author(users.get(1 % users.size()))
                 .voteCount(0)
+                .viewCount(83)
                 .createdAt(LocalDateTime.now().minusDays(2).minusHours(7))
                 .build();
         
-        Set<Tag> tags5 = new java.util.HashSet<>();
+        List<Tag> tags5 = new ArrayList<>();
 
         tagRepository.findByName("ethics").ifPresent(tags5::add);
 
@@ -445,10 +136,11 @@ public class DataSeeder implements CommandLineRunner {
                 .body("Our university has strict data privacy laws (FERPA compliance) and we cannot send student interaction data to OpenAI or Anthropic APIs. Can Evalometrics be configured to use local open-source models (like Llama 3) for its evaluation metrics?")
                 .author(users.get(4 % users.size()))
                 .voteCount(0)
+                .viewCount(488)
                 .createdAt(LocalDateTime.now().minusDays(5).minusHours(6))
                 .build();
         
-        Set<Tag> tags6 = new java.util.HashSet<>();
+        List<Tag> tags6 = new ArrayList<>();
 
         tagRepository.findByName("security").ifPresent(tags6::add);
 
@@ -464,10 +156,11 @@ public class DataSeeder implements CommandLineRunner {
                 .body("My StudySocius productivity score dropped slightly over the weekend even though I completed all my tasks. What factors go into this calculation? Does it penalize taking rest days?")
                 .author(users.get(5 % users.size()))
                 .voteCount(0)
+                .viewCount(329)
                 .createdAt(LocalDateTime.now().minusDays(17).minusHours(20))
                 .build();
         
-        Set<Tag> tags7 = new java.util.HashSet<>();
+        List<Tag> tags7 = new ArrayList<>();
 
         tagRepository.findByName("algorithms").ifPresent(tags7::add);
 
@@ -481,10 +174,11 @@ public class DataSeeder implements CommandLineRunner {
                 .body("Our institution only has about 150 faculty members. The predictive models in FacultyLens seem geared towards massive R1 research universities. Does the AI perform well with smaller datasets?")
                 .author(users.get(1 % users.size()))
                 .voteCount(0)
+                .viewCount(313)
                 .createdAt(LocalDateTime.now().minusDays(18).minusHours(4))
                 .build();
         
-        Set<Tag> tags8 = new java.util.HashSet<>();
+        List<Tag> tags8 = new ArrayList<>();
 
         tagRepository.findByName("machine-learning").ifPresent(tags8::add);
 
@@ -498,10 +192,11 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I'm a med student considering using Bevinzey to automatically generate Anki flashcards from my lecture PDFs. Has anyone tested its accuracy for dense medical topics like neuroanatomy?")
                 .author(users.get(3 % users.size()))
                 .voteCount(0)
+                .viewCount(467)
                 .createdAt(LocalDateTime.now().minusDays(17).minusHours(22))
                 .build();
         
-        Set<Tag> tags9 = new java.util.HashSet<>();
+        List<Tag> tags9 = new ArrayList<>();
 
         tagRepository.findByName("anatomy").ifPresent(tags9::add);
 
@@ -517,10 +212,11 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I constantly get confused when mixing two different strengths of a compound. Does RxCalculations teach both the alligation alternate method and the standard algebraic method?")
                 .author(users.get(2 % users.size()))
                 .voteCount(0)
+                .viewCount(195)
                 .createdAt(LocalDateTime.now().minusDays(29).minusHours(21))
                 .build();
         
-        Set<Tag> tags10 = new java.util.HashSet<>();
+        List<Tag> tags10 = new ArrayList<>();
 
         tagRepository.findByName("pharmacology").ifPresent(tags10::add);
 
@@ -534,10 +230,11 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I want to evaluate a student-support chatbot. In addition to accuracy, I want to measure 'empathy' and 'tone'. How easy is it to define these custom metrics in Evalometrics?")
                 .author(users.get(4 % users.size()))
                 .voteCount(0)
+                .viewCount(455)
                 .createdAt(LocalDateTime.now().minusDays(14).minusHours(13))
                 .build();
         
-        Set<Tag> tags11 = new java.util.HashSet<>();
+        List<Tag> tags11 = new ArrayList<>();
 
         tagRepository.findByName("nlp").ifPresent(tags11::add);
 
@@ -551,10 +248,11 @@ public class DataSeeder implements CommandLineRunner {
                 .body("If I upload two papers that directly contradict each other, how does Bevinzey's Q&A generation handle the discrepancy? Does it hallucinate a middle ground, or point out the conflict?")
                 .author(users.get(2 % users.size()))
                 .voteCount(0)
+                .viewCount(234)
                 .createdAt(LocalDateTime.now().minusDays(21).minusHours(5))
                 .build();
         
-        Set<Tag> tags12 = new java.util.HashSet<>();
+        List<Tag> tags12 = new ArrayList<>();
 
         tagRepository.findByName("research").ifPresent(tags12::add);
 
@@ -570,10 +268,11 @@ public class DataSeeder implements CommandLineRunner {
                 .body("Transparency is a big issue at our university. If department chairs are using FacultyLens to assign workloads, do individual faculty members get a dashboard to see their own metrics and predictions?")
                 .author(users.get(1 % users.size()))
                 .voteCount(0)
+                .viewCount(61)
                 .createdAt(LocalDateTime.now().minusDays(17).minusHours(11))
                 .build();
         
-        Set<Tag> tags13 = new java.util.HashSet<>();
+        List<Tag> tags13 = new ArrayList<>();
 
         tagRepository.findByName("management").ifPresent(tags13::add);
 
@@ -587,10 +286,11 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I'm trying to convince my study group to switch to StudySocius. Besides task tracking, what gamification features does it have to keep people motivated?")
                 .author(users.get(5 % users.size()))
                 .voteCount(0)
+                .viewCount(154)
                 .createdAt(LocalDateTime.now().minusDays(24).minusHours(8))
                 .build();
         
-        Set<Tag> tags14 = new java.util.HashSet<>();
+        List<Tag> tags14 = new ArrayList<>();
 
         tagRepository.findByName("software-engineering").ifPresent(tags14::add);
 
@@ -604,10 +304,11 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I know RxCalculations is geared towards pharmacy students, but I am in nursing school studying for the NCLEX. Would the dosage calculation modules be overkill, or still useful for me?")
                 .author(users.get(3 % users.size()))
                 .voteCount(0)
+                .viewCount(446)
                 .createdAt(LocalDateTime.now().minusDays(17).minusHours(22))
                 .build();
         
-        Set<Tag> tags15 = new java.util.HashSet<>();
+        List<Tag> tags15 = new ArrayList<>();
 
         tagRepository.findByName("nursing").ifPresent(tags15::add);
 
@@ -623,10 +324,11 @@ public class DataSeeder implements CommandLineRunner {
                 .body("We want to run LLM evaluations automatically every time we push a prompt update to GitHub. Does Evalometrics have integrations for GitHub Actions or Jenkins?")
                 .author(users.get(4 % users.size()))
                 .voteCount(0)
+                .viewCount(311)
                 .createdAt(LocalDateTime.now().minusDays(26).minusHours(5))
                 .build();
         
-        Set<Tag> tags16 = new java.util.HashSet<>();
+        List<Tag> tags16 = new ArrayList<>();
 
         tagRepository.findByName("github-actions").ifPresent(tags16::add);
 
@@ -642,10 +344,11 @@ public class DataSeeder implements CommandLineRunner {
                 .body("I use Obsidian for my 'Second Brain'. Is there a seamless way to export the Markdown summaries and Q&A pairs generated by Bevinzey directly into Obsidian or Notion?")
                 .author(users.get(5 % users.size()))
                 .voteCount(0)
+                .viewCount(70)
                 .createdAt(LocalDateTime.now().minusDays(27).minusHours(5))
                 .build();
         
-        Set<Tag> tags17 = new java.util.HashSet<>();
+        List<Tag> tags17 = new ArrayList<>();
 
         tagRepository.findByName("software-engineering").ifPresent(tags17::add);
 
@@ -659,10 +362,11 @@ public class DataSeeder implements CommandLineRunner {
                 .body("When using AI tools in the EduScope ecosystem to assist with grading or evaluating student input, how do you mitigate algorithmic bias against non-native English speakers?")
                 .author(users.get(1 % users.size()))
                 .voteCount(0)
+                .viewCount(210)
                 .createdAt(LocalDateTime.now().minusDays(11).minusHours(23))
                 .build();
         
-        Set<Tag> tags18 = new java.util.HashSet<>();
+        List<Tag> tags18 = new ArrayList<>();
 
         tagRepository.findByName("ethics").ifPresent(tags18::add);
 
@@ -678,10 +382,11 @@ public class DataSeeder implements CommandLineRunner {
                 .body("Can FacultyLens automatically pull teaching workload data (like number of students, assignments graded) directly from Canvas or Blackboard via API?")
                 .author(users.get(2 % users.size()))
                 .voteCount(0)
+                .viewCount(211)
                 .createdAt(LocalDateTime.now().minusDays(15).minusHours(23))
                 .build();
         
-        Set<Tag> tags19 = new java.util.HashSet<>();
+        List<Tag> tags19 = new ArrayList<>();
 
         tagRepository.findByName("software-engineering").ifPresent(tags19::add);
 
@@ -704,10 +409,10 @@ public class DataSeeder implements CommandLineRunner {
                 .build();
         a_0_0 = answerRepository.save(a_0_0);
 
-        for(int k=0; k<Math.min(12, users.size()); k++) {
+        for(int k=0; k<12; k++) {
             Vote v = Vote.builder()
                     .answer(a_0_0)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             voteRepository.save(v);
@@ -715,10 +420,10 @@ public class DataSeeder implements CommandLineRunner {
         a_0_0.setVoteCount(12);
         answerRepository.save(a_0_0);
 
-        for(int k=0; k<Math.min(8, users.size()); k++) {
+        for(int k=0; k<8; k++) {
             QuestionVote qv = QuestionVote.builder()
                     .question(q0)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             questionVoteRepository.save(qv);
@@ -736,10 +441,10 @@ public class DataSeeder implements CommandLineRunner {
                 .build();
         a_1_0 = answerRepository.save(a_1_0);
 
-        for(int k=0; k<Math.min(25, users.size()); k++) {
+        for(int k=0; k<25; k++) {
             Vote v = Vote.builder()
                     .answer(a_1_0)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             voteRepository.save(v);
@@ -757,10 +462,10 @@ public class DataSeeder implements CommandLineRunner {
                 .build();
         a_1_1 = answerRepository.save(a_1_1);
 
-        for(int k=0; k<Math.min(10, users.size()); k++) {
+        for(int k=0; k<10; k++) {
             Vote v = Vote.builder()
                     .answer(a_1_1)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             voteRepository.save(v);
@@ -768,10 +473,10 @@ public class DataSeeder implements CommandLineRunner {
         a_1_1.setVoteCount(10);
         answerRepository.save(a_1_1);
 
-        for(int k=0; k<Math.min(15, users.size()); k++) {
+        for(int k=0; k<15; k++) {
             QuestionVote qv = QuestionVote.builder()
                     .question(q1)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             questionVoteRepository.save(qv);
@@ -789,10 +494,10 @@ public class DataSeeder implements CommandLineRunner {
                 .build();
         a_2_0 = answerRepository.save(a_2_0);
 
-        for(int k=0; k<Math.min(30, users.size()); k++) {
+        for(int k=0; k<30; k++) {
             Vote v = Vote.builder()
                     .answer(a_2_0)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             voteRepository.save(v);
@@ -800,10 +505,10 @@ public class DataSeeder implements CommandLineRunner {
         a_2_0.setVoteCount(30);
         answerRepository.save(a_2_0);
 
-        for(int k=0; k<Math.min(22, users.size()); k++) {
+        for(int k=0; k<22; k++) {
             QuestionVote qv = QuestionVote.builder()
                     .question(q2)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             questionVoteRepository.save(qv);
@@ -821,10 +526,10 @@ public class DataSeeder implements CommandLineRunner {
                 .build();
         a_3_0 = answerRepository.save(a_3_0);
 
-        for(int k=0; k<Math.min(5, users.size()); k++) {
+        for(int k=0; k<5; k++) {
             Vote v = Vote.builder()
                     .answer(a_3_0)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             voteRepository.save(v);
@@ -832,10 +537,10 @@ public class DataSeeder implements CommandLineRunner {
         a_3_0.setVoteCount(5);
         answerRepository.save(a_3_0);
 
-        for(int k=0; k<Math.min(10, users.size()); k++) {
+        for(int k=0; k<10; k++) {
             QuestionVote qv = QuestionVote.builder()
                     .question(q3)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             questionVoteRepository.save(qv);
@@ -853,10 +558,10 @@ public class DataSeeder implements CommandLineRunner {
                 .build();
         a_4_0 = answerRepository.save(a_4_0);
 
-        for(int k=0; k<Math.min(18, users.size()); k++) {
+        for(int k=0; k<18; k++) {
             Vote v = Vote.builder()
                     .answer(a_4_0)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             voteRepository.save(v);
@@ -864,10 +569,10 @@ public class DataSeeder implements CommandLineRunner {
         a_4_0.setVoteCount(18);
         answerRepository.save(a_4_0);
 
-        for(int k=0; k<Math.min(14, users.size()); k++) {
+        for(int k=0; k<14; k++) {
             QuestionVote qv = QuestionVote.builder()
                     .question(q4)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             questionVoteRepository.save(qv);
@@ -885,10 +590,10 @@ public class DataSeeder implements CommandLineRunner {
                 .build();
         a_5_0 = answerRepository.save(a_5_0);
 
-        for(int k=0; k<Math.min(45, users.size()); k++) {
+        for(int k=0; k<45; k++) {
             Vote v = Vote.builder()
                     .answer(a_5_0)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             voteRepository.save(v);
@@ -896,10 +601,10 @@ public class DataSeeder implements CommandLineRunner {
         a_5_0.setVoteCount(45);
         answerRepository.save(a_5_0);
 
-        for(int k=0; k<Math.min(35, users.size()); k++) {
+        for(int k=0; k<35; k++) {
             QuestionVote qv = QuestionVote.builder()
                     .question(q5)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             questionVoteRepository.save(qv);
@@ -917,10 +622,10 @@ public class DataSeeder implements CommandLineRunner {
                 .build();
         a_6_0 = answerRepository.save(a_6_0);
 
-        for(int k=0; k<Math.min(20, users.size()); k++) {
+        for(int k=0; k<20; k++) {
             Vote v = Vote.builder()
                     .answer(a_6_0)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             voteRepository.save(v);
@@ -928,10 +633,10 @@ public class DataSeeder implements CommandLineRunner {
         a_6_0.setVoteCount(20);
         answerRepository.save(a_6_0);
 
-        for(int k=0; k<Math.min(18, users.size()); k++) {
+        for(int k=0; k<18; k++) {
             QuestionVote qv = QuestionVote.builder()
                     .question(q6)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             questionVoteRepository.save(qv);
@@ -949,10 +654,10 @@ public class DataSeeder implements CommandLineRunner {
                 .build();
         a_7_0 = answerRepository.save(a_7_0);
 
-        for(int k=0; k<Math.min(15, users.size()); k++) {
+        for(int k=0; k<15; k++) {
             Vote v = Vote.builder()
                     .answer(a_7_0)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             voteRepository.save(v);
@@ -960,10 +665,10 @@ public class DataSeeder implements CommandLineRunner {
         a_7_0.setVoteCount(15);
         answerRepository.save(a_7_0);
 
-        for(int k=0; k<Math.min(12, users.size()); k++) {
+        for(int k=0; k<12; k++) {
             QuestionVote qv = QuestionVote.builder()
                     .question(q7)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             questionVoteRepository.save(qv);
@@ -981,10 +686,10 @@ public class DataSeeder implements CommandLineRunner {
                 .build();
         a_8_0 = answerRepository.save(a_8_0);
 
-        for(int k=0; k<Math.min(22, users.size()); k++) {
+        for(int k=0; k<22; k++) {
             Vote v = Vote.builder()
                     .answer(a_8_0)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             voteRepository.save(v);
@@ -992,10 +697,10 @@ public class DataSeeder implements CommandLineRunner {
         a_8_0.setVoteCount(22);
         answerRepository.save(a_8_0);
 
-        for(int k=0; k<Math.min(19, users.size()); k++) {
+        for(int k=0; k<19; k++) {
             QuestionVote qv = QuestionVote.builder()
                     .question(q8)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             questionVoteRepository.save(qv);
@@ -1013,10 +718,10 @@ public class DataSeeder implements CommandLineRunner {
                 .build();
         a_9_0 = answerRepository.save(a_9_0);
 
-        for(int k=0; k<Math.min(40, users.size()); k++) {
+        for(int k=0; k<40; k++) {
             Vote v = Vote.builder()
                     .answer(a_9_0)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             voteRepository.save(v);
@@ -1024,10 +729,10 @@ public class DataSeeder implements CommandLineRunner {
         a_9_0.setVoteCount(40);
         answerRepository.save(a_9_0);
 
-        for(int k=0; k<Math.min(28, users.size()); k++) {
+        for(int k=0; k<28; k++) {
             QuestionVote qv = QuestionVote.builder()
                     .question(q9)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             questionVoteRepository.save(qv);
@@ -1045,10 +750,10 @@ public class DataSeeder implements CommandLineRunner {
                 .build();
         a_10_0 = answerRepository.save(a_10_0);
 
-        for(int k=0; k<Math.min(12, users.size()); k++) {
+        for(int k=0; k<12; k++) {
             Vote v = Vote.builder()
                     .answer(a_10_0)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             voteRepository.save(v);
@@ -1056,10 +761,10 @@ public class DataSeeder implements CommandLineRunner {
         a_10_0.setVoteCount(12);
         answerRepository.save(a_10_0);
 
-        for(int k=0; k<Math.min(9, users.size()); k++) {
+        for(int k=0; k<9; k++) {
             QuestionVote qv = QuestionVote.builder()
                     .question(q10)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             questionVoteRepository.save(qv);
@@ -1077,10 +782,10 @@ public class DataSeeder implements CommandLineRunner {
                 .build();
         a_11_0 = answerRepository.save(a_11_0);
 
-        for(int k=0; k<Math.min(16, users.size()); k++) {
+        for(int k=0; k<16; k++) {
             Vote v = Vote.builder()
                     .answer(a_11_0)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             voteRepository.save(v);
@@ -1088,10 +793,10 @@ public class DataSeeder implements CommandLineRunner {
         a_11_0.setVoteCount(16);
         answerRepository.save(a_11_0);
 
-        for(int k=0; k<Math.min(15, users.size()); k++) {
+        for(int k=0; k<15; k++) {
             QuestionVote qv = QuestionVote.builder()
                     .question(q11)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             questionVoteRepository.save(qv);
@@ -1109,10 +814,10 @@ public class DataSeeder implements CommandLineRunner {
                 .build();
         a_12_0 = answerRepository.save(a_12_0);
 
-        for(int k=0; k<Math.min(35, users.size()); k++) {
+        for(int k=0; k<35; k++) {
             Vote v = Vote.builder()
                     .answer(a_12_0)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             voteRepository.save(v);
@@ -1120,10 +825,10 @@ public class DataSeeder implements CommandLineRunner {
         a_12_0.setVoteCount(35);
         answerRepository.save(a_12_0);
 
-        for(int k=0; k<Math.min(25, users.size()); k++) {
+        for(int k=0; k<25; k++) {
             QuestionVote qv = QuestionVote.builder()
                     .question(q12)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             questionVoteRepository.save(qv);
@@ -1141,10 +846,10 @@ public class DataSeeder implements CommandLineRunner {
                 .build();
         a_13_0 = answerRepository.save(a_13_0);
 
-        for(int k=0; k<Math.min(28, users.size()); k++) {
+        for(int k=0; k<28; k++) {
             Vote v = Vote.builder()
                     .answer(a_13_0)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             voteRepository.save(v);
@@ -1152,10 +857,10 @@ public class DataSeeder implements CommandLineRunner {
         a_13_0.setVoteCount(28);
         answerRepository.save(a_13_0);
 
-        for(int k=0; k<Math.min(20, users.size()); k++) {
+        for(int k=0; k<20; k++) {
             QuestionVote qv = QuestionVote.builder()
                     .question(q13)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             questionVoteRepository.save(qv);
@@ -1173,10 +878,10 @@ public class DataSeeder implements CommandLineRunner {
                 .build();
         a_14_0 = answerRepository.save(a_14_0);
 
-        for(int k=0; k<Math.min(18, users.size()); k++) {
+        for(int k=0; k<18; k++) {
             Vote v = Vote.builder()
                     .answer(a_14_0)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             voteRepository.save(v);
@@ -1184,10 +889,10 @@ public class DataSeeder implements CommandLineRunner {
         a_14_0.setVoteCount(18);
         answerRepository.save(a_14_0);
 
-        for(int k=0; k<Math.min(14, users.size()); k++) {
+        for(int k=0; k<14; k++) {
             QuestionVote qv = QuestionVote.builder()
                     .question(q14)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             questionVoteRepository.save(qv);
@@ -1205,10 +910,10 @@ public class DataSeeder implements CommandLineRunner {
                 .build();
         a_15_0 = answerRepository.save(a_15_0);
 
-        for(int k=0; k<Math.min(25, users.size()); k++) {
+        for(int k=0; k<25; k++) {
             Vote v = Vote.builder()
                     .answer(a_15_0)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             voteRepository.save(v);
@@ -1216,10 +921,10 @@ public class DataSeeder implements CommandLineRunner {
         a_15_0.setVoteCount(25);
         answerRepository.save(a_15_0);
 
-        for(int k=0; k<Math.min(22, users.size()); k++) {
+        for(int k=0; k<22; k++) {
             QuestionVote qv = QuestionVote.builder()
                     .question(q15)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             questionVoteRepository.save(qv);
@@ -1237,10 +942,10 @@ public class DataSeeder implements CommandLineRunner {
                 .build();
         a_16_0 = answerRepository.save(a_16_0);
 
-        for(int k=0; k<Math.min(32, users.size()); k++) {
+        for(int k=0; k<32; k++) {
             Vote v = Vote.builder()
                     .answer(a_16_0)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             voteRepository.save(v);
@@ -1248,10 +953,10 @@ public class DataSeeder implements CommandLineRunner {
         a_16_0.setVoteCount(32);
         answerRepository.save(a_16_0);
 
-        for(int k=0; k<Math.min(27, users.size()); k++) {
+        for(int k=0; k<27; k++) {
             QuestionVote qv = QuestionVote.builder()
                     .question(q16)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             questionVoteRepository.save(qv);
@@ -1269,10 +974,10 @@ public class DataSeeder implements CommandLineRunner {
                 .build();
         a_17_0 = answerRepository.save(a_17_0);
 
-        for(int k=0; k<Math.min(22, users.size()); k++) {
+        for(int k=0; k<22; k++) {
             Vote v = Vote.builder()
                     .answer(a_17_0)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             voteRepository.save(v);
@@ -1280,10 +985,10 @@ public class DataSeeder implements CommandLineRunner {
         a_17_0.setVoteCount(22);
         answerRepository.save(a_17_0);
 
-        for(int k=0; k<Math.min(18, users.size()); k++) {
+        for(int k=0; k<18; k++) {
             QuestionVote qv = QuestionVote.builder()
                     .question(q17)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             questionVoteRepository.save(qv);
@@ -1301,10 +1006,10 @@ public class DataSeeder implements CommandLineRunner {
                 .build();
         a_18_0 = answerRepository.save(a_18_0);
 
-        for(int k=0; k<Math.min(55, users.size()); k++) {
+        for(int k=0; k<55; k++) {
             Vote v = Vote.builder()
                     .answer(a_18_0)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             voteRepository.save(v);
@@ -1312,10 +1017,10 @@ public class DataSeeder implements CommandLineRunner {
         a_18_0.setVoteCount(55);
         answerRepository.save(a_18_0);
 
-        for(int k=0; k<Math.min(42, users.size()); k++) {
+        for(int k=0; k<42; k++) {
             QuestionVote qv = QuestionVote.builder()
                     .question(q18)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             questionVoteRepository.save(qv);
@@ -1333,10 +1038,10 @@ public class DataSeeder implements CommandLineRunner {
                 .build();
         a_19_0 = answerRepository.save(a_19_0);
 
-        for(int k=0; k<Math.min(28, users.size()); k++) {
+        for(int k=0; k<28; k++) {
             Vote v = Vote.builder()
                     .answer(a_19_0)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             voteRepository.save(v);
@@ -1344,10 +1049,10 @@ public class DataSeeder implements CommandLineRunner {
         a_19_0.setVoteCount(28);
         answerRepository.save(a_19_0);
 
-        for(int k=0; k<Math.min(21, users.size()); k++) {
+        for(int k=0; k<21; k++) {
             QuestionVote qv = QuestionVote.builder()
                     .question(q19)
-                    .user(users.get(k))
+                    .user(users.get(k % users.size()))
                     .voteType(VoteType.UP)
                     .build();
             questionVoteRepository.save(qv);
@@ -1363,5 +1068,3 @@ public class DataSeeder implements CommandLineRunner {
         }
         System.out.println("Finished seeding questions, answers, and interactions!");
     }
-
-}
