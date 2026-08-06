@@ -71,6 +71,9 @@ public class DataSeeder implements CommandLineRunner {
     @Autowired
     private com.educonnect.repository.AssessmentRepository assessmentRepository;
 
+    @Autowired
+    private com.educonnect.repository.StudyGroupRepository studyGroupRepository;
+
     @Override
     public void run(String... args) throws Exception {
         seedSystemSettings();
@@ -80,6 +83,7 @@ public class DataSeeder implements CommandLineRunner {
         seedQuestionsAndAnswers();
         seedHistoricalAnswersForLeaders();
         seedAssessments();
+        seedStudyGroups();
         seedAuditLogs();
     }
 
@@ -1480,5 +1484,35 @@ public class DataSeeder implements CommandLineRunner {
         
         assessmentRepository.save(a1);
         assessmentRepository.save(a2);
+    }
+
+    private void seedStudyGroups() {
+        if (studyGroupRepository.count() > 0) return;
+        System.out.println("Seeding study groups...");
+        User admin = userRepository.findByEmail("dulanjan.connect@gmail.com").orElse(null);
+        if (admin == null) return;
+
+        com.educonnect.model.StudyGroup g1 = com.educonnect.model.StudyGroup.builder()
+            .name("Advanced Machine Learning")
+            .description("A group for discussing deep learning, neural networks, and AI research.")
+            .category("Computer Science")
+            .owner(admin)
+            .build();
+            
+        com.educonnect.model.StudyGroup g2 = com.educonnect.model.StudyGroup.builder()
+            .name("Clinical Pathophysiology Prep")
+            .description("Preparation for the upcoming pathophysiology exams. Share notes and quiz each other.")
+            .category("Medicine")
+            .owner(admin)
+            .build();
+
+        com.educonnect.model.StudyGroup g3 = com.educonnect.model.StudyGroup.builder()
+            .name("Calculus 101 Support")
+            .description("Struggling with derivatives? Let's help each other out in Calculus.")
+            .category("Mathematics")
+            .owner(admin)
+            .build();
+
+        studyGroupRepository.saveAll(Arrays.asList(g1, g2, g3));
     }
 }

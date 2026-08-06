@@ -96,7 +96,7 @@ export default function Navbar() {
               <Link to="/questions" className={navLinkClass('/questions')} id="nav-questions">
                 Questions
               </Link>
-              <Link to="/study-groups" className={navLinkClass('/study-groups')} id="nav-groups">
+              <Link to="/groups" className={navLinkClass('/groups')} id="nav-groups">
                 Study Groups
               </Link>
               <Link to="/leaderboard" className={navLinkClass('/leaderboard')} id="nav-leaderboard">
@@ -272,7 +272,7 @@ export default function Navbar() {
             <Link to="/questions" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-50 font-medium">
               <HelpCircle className="h-5 w-5 text-gray-400" /> Questions
             </Link>
-            <Link to="/study-groups" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-50 font-medium">
+            <Link to="/groups" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-50 font-medium">
               <Users2 className="h-5 w-5 text-gray-400" /> Study Groups
             </Link>
             <Link to="/leaderboard" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-50 font-medium">
