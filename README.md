@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./frontend/public/vite.svg" alt="EduConnect Logo" width="100"/>
+  <img src="https://unpkg.com/lucide-static@0.321.0/icons/book-open.svg" alt="EduConnect Logo" width="80" />
   <h1>EduScope Connect</h1>
   <p><strong>A Modern, Gamified, Full-Stack Educational Community Platform</strong></p>
 
