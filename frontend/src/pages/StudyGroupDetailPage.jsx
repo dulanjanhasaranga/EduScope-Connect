@@ -184,7 +184,7 @@ export default function StudyGroupDetailPage() {
     g.category.toLowerCase().includes(sidebarSearch.toLowerCase())
   );
   const mySidebarGroups = filteredSidebarGroups.filter(g => g.isMember || g.ownerId === user?.id);
-  const discoverSidebarGroups = filteredSidebarGroups.filter(g => !(g.isMember || g.ownerId === user?.id));
+  const discoverSidebarGroups = filteredSidebarGroups; // User requested Discover to show all groups with updated buttons
   
   const activeSidebarList = sidebarTab === 'chats' ? mySidebarGroups : discoverSidebarGroups;
 
@@ -265,12 +265,21 @@ export default function StudyGroupDetailPage() {
                   </div>
                 </div>
                 {sidebarTab === 'discover' && (
-                  <button 
-                    onClick={(e) => handleJoinSidebarGroup(e, g)}
-                    className="ml-2 px-3 py-1 bg-gray-100 hover:bg-orange-500 hover:text-white text-gray-700 text-xs font-semibold rounded-lg transition-colors shrink-0"
-                  >
-                    Join
-                  </button>
+                  g.isMember || g.ownerId === user?.id ? (
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); navigate(`/groups/${g.id}`); setSidebarTab('chats'); }}
+                      className="ml-2 px-3 py-1 bg-green-50 text-green-700 text-xs font-semibold rounded-lg shrink-0"
+                    >
+                      Joined
+                    </button>
+                  ) : (
+                    <button 
+                      onClick={(e) => handleJoinSidebarGroup(e, g)}
+                      className="ml-2 px-3 py-1 bg-gray-100 hover:bg-orange-500 hover:text-white text-gray-700 text-xs font-semibold rounded-lg transition-colors shrink-0"
+                    >
+                      Join
+                    </button>
+                  )
                 )}
               </div>
             ))

@@ -81,7 +81,7 @@ export default function StudyGroupsPage() {
   );
 
   const myGroups = filteredGroups.filter(group => group.isMember || group.ownerId === user?.id);
-  const discoverGroups = filteredGroups.filter(group => !(group.isMember || group.ownerId === user?.id));
+  const discoverGroups = filteredGroups; // The user requested all groups remain visible in Discover section
 
   if (loading) return <LoadingSpinner size="lg" className="py-20" />;
 
@@ -179,12 +179,21 @@ export default function StudyGroupsPage() {
               <p className="text-gray-600 mb-6 text-sm line-clamp-2 min-h-[40px] flex-grow">{group.description}</p>
               
               <div className="flex items-center gap-2 mt-auto">
-                <button 
-                  onClick={() => handleJoinOrEnter(group)}
-                  className="w-full py-2 btn-secondary hover:bg-orange-50 hover:text-orange-600"
-                >
-                  Join Group
-                </button>
+                {group.isMember || group.ownerId === user?.id ? (
+                  <button 
+                    onClick={() => handleJoinOrEnter(group)}
+                    className="w-full py-2 bg-green-50 text-green-700 font-bold rounded-lg hover:bg-green-100 transition-colors"
+                  >
+                    View Group
+                  </button>
+                ) : (
+                  <button 
+                    onClick={() => handleJoinOrEnter(group)}
+                    className="w-full py-2 btn-secondary hover:bg-orange-50 hover:text-orange-600"
+                  >
+                    Join Group
+                  </button>
+                )}
               </div>
             </div>
           ))}
