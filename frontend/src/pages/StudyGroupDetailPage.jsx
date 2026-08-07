@@ -54,7 +54,7 @@ export default function StudyGroupDetailPage() {
 
   const fetchAllGroups = async () => {
     try {
-      const res = await api.get('/groups');
+      const res = await api.get(`/groups?t=${new Date().getTime()}`);
       setAllGroups(res.data);
     } catch (err) {
       console.error("Failed to load groups");
@@ -154,11 +154,25 @@ export default function StudyGroupDetailPage() {
   const handleJoinSidebarGroup = async (e, groupToJoin) => {
     e.stopPropagation();
     try {
-      await api.post(`/groups/${groupToJoin.id}/join`);
+      const res = await api.post(`/groups/${groupToJoin.id}/join`);
+      const joinedGroup = res.data;
+      
       showToast(`Joined ${groupToJoin.name}!`, 'success');
-      await fetchAllGroups();
+      
+      // Optimistically update states for instant UI transition
+      setAllGroups(prev => prev.map(g => g.id === joinedGroup.id ? joinedGroup : g));
+      if (group?.id === joinedGroup.id) {
+        setGroup(joinedGroup);
+        if (!stompClient.current?.connected) {
+          connectWebSocket(joinedGroup.id);
+        }
+      }
+      
       setSidebarTab('chats');
       navigate(`/groups/${groupToJoin.id}`);
+      
+      // Fetch in background to ensure everything is synced
+      fetchAllGroups();
     } catch (err) {
       showToast(err.response?.data?.error || 'Failed to join group', 'error');
     }

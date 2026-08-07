@@ -23,7 +23,7 @@ export default function StudyGroupsPage() {
 
   const fetchGroups = async () => {
     try {
-      const res = await api.get('/groups');
+      const res = await api.get(`/groups?t=${new Date().getTime()}`);
       setGroups(res.data);
     } catch (err) {
       showToast('Failed to load study groups', 'error');
