@@ -778,11 +778,25 @@ public class DataSeeder implements CommandLineRunner {
                         }
                         myGroup.getMembers().add(student);
                         studyGroupRepository.save(myGroup);
+                        
+                        String[] chatVariations = {
+                                "Hey everyone! Glad to join the " + myGroup.getName() + " group. Looking forward to learning together!",
+                                "Has anyone started working on the latest topics?",
+                                "Yes, I just started yesterday. It's quite interesting!",
+                                "Let me know if anyone needs help, we can study together.",
+                                "Hi guys! I'm really interested in this and hope to share some great resources.",
+                                "Hello! This topic is tough, so I'm hoping this group will be a big help!",
+                                "Does anyone have a good tutorial to recommend?",
+                                "I found a great YouTube video on this recently, I'll share it later.",
+                                "Just joined! Can't wait to start discussing with you all.",
+                                "Hey folks, what's everyone working on right now?"
+                        };
+                        String actualMsgContent = chatVariations[i % chatVariations.length];
 
                         GroupMessage msg = GroupMessage.builder()
                                         .group(myGroup)
                                         .author(student)
-                                        .content(msgContent)
+                                        .content(actualMsgContent)
                                         .createdAt(randomDate)
                                         .build();
                         groupMessageRepository.save(msg);
