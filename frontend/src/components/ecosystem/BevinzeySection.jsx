@@ -2,7 +2,7 @@ import React from 'react';
 import { Bot, Sparkles, BookText, ArrowRight, Zap, CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function BevinzeySection() {
+export default function BevinzeySection({ onAction }) {
   return (
     <section id="bevinzey" className="relative py-24 bg-[#0a0514] overflow-hidden">
       {/* Abstract Glowing Backgrounds */}
@@ -44,10 +44,10 @@ export default function BevinzeySection() {
             </ul>
             
             <div className="pt-8">
-              <a href="https://bevinzey.com/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 px-8 py-4 text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 rounded-xl font-bold shadow-[0_0_30px_rgba(168,85,247,0.4)] transition-all hover:-translate-y-1 hover:shadow-[0_0_40px_rgba(168,85,247,0.6)]">
+              <button onClick={onAction} className="inline-flex items-center justify-center gap-2 px-8 py-4 text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 rounded-xl font-bold shadow-[0_0_30px_rgba(168,85,247,0.4)] transition-all hover:-translate-y-1 hover:shadow-[0_0_40px_rgba(168,85,247,0.6)]">
                 Try Bevinzey Free
                 <ArrowRight className="w-5 h-5" />
-              </a>
+              </button>
             </div>
           </div>
           

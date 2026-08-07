@@ -2,7 +2,7 @@ import React from 'react';
 import { Terminal, Activity, Cpu, ShieldCheck, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function EvalometricsSection() {
+export default function EvalometricsSection({ onAction }) {
   return (
     <section id="evalometrics" className="relative py-24 bg-[#0d1117] overflow-hidden border-t border-white/10">
       {/* Developer Grid Background */}
@@ -42,10 +42,10 @@ export default function EvalometricsSection() {
             </div>
             
             <div className="pt-8">
-              <a href="https://deepeval.com/docs/metrics-introduction" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 px-8 py-4 text-[#0d1117] bg-emerald-400 hover:bg-emerald-300 rounded-lg font-bold transition-all hover:-translate-y-1 font-mono">
+              <button onClick={onAction} className="inline-flex items-center justify-center gap-2 px-8 py-4 text-[#0d1117] bg-emerald-400 hover:bg-emerald-300 rounded-lg font-bold transition-all hover:-translate-y-1 font-mono">
                 Read the Docs
                 <ChevronRight className="w-5 h-5" />
-              </a>
+              </button>
             </div>
           </div>
           

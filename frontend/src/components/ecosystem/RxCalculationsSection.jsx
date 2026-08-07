@@ -2,7 +2,7 @@ import React from 'react';
 import { Pill, ActivitySquare, PlayCircle, BookOpenCheck, ArrowRight, ShieldCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function RxCalculationsSection() {
+export default function RxCalculationsSection({ onAction }) {
   return (
     <section id="rxcalculations" className="relative py-24 bg-white overflow-hidden border-t border-slate-100">
       <div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'20\' height=\'20\' viewBox=\'0 0 20 20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23f1f5f9\' fill-opacity=\'1\' fill-rule=\'evenodd\'%3E%3Ccircle cx=\'3\' cy=\'3\' r=\'3\'/%3E%3Ccircle cx=\'13\' cy=\'13\' r=\'3\'/%3E%3C/g%3E%3C/svg%3E")' }}></div>
@@ -55,11 +55,11 @@ export default function RxCalculationsSection() {
               ))}
             </div>
             
-            <div className="pt-8">
-              <a href="https://www.rxcalculations.com/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 px-8 py-4 text-white bg-red-600 hover:bg-red-700 rounded-xl font-bold shadow-lg shadow-red-500/30 transition-all hover:-translate-y-1">
+            <div className="pt-8 flex gap-4">
+              <button onClick={onAction} className="inline-flex items-center justify-center gap-2 px-8 py-4 text-white bg-red-600 hover:bg-red-700 rounded-xl font-bold shadow-lg shadow-red-500/30 transition-all hover:-translate-y-1">
                 Start Practicing
                 <ArrowRight className="w-5 h-5" />
-              </a>
+              </button>
             </div>
           </div>
           

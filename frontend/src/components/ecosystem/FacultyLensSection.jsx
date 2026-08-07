@@ -2,7 +2,7 @@ import React from 'react';
 import { BarChart3, TrendingUp, Users, BrainCircuit, ArrowRight, Activity, BookOpen, Presentation } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function FacultyLensSection() {
+export default function FacultyLensSection({ onAction }) {
   return (
     <section id="facultylens" className="relative py-24 bg-slate-50 overflow-hidden">
       {/* Background styling */}
@@ -50,10 +50,10 @@ export default function FacultyLensSection() {
             </div>
             
             <div className="pt-8">
-              <a href="https://facultylens.com/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 px-8 py-4 text-white bg-blue-600 hover:bg-blue-700 rounded-xl font-bold shadow-lg shadow-blue-500/30 transition-all hover:-translate-y-1">
+              <button onClick={onAction} className="inline-flex items-center justify-center gap-2 px-8 py-4 text-white bg-blue-600 hover:bg-blue-700 rounded-xl font-bold shadow-lg shadow-blue-500/30 transition-all hover:-translate-y-1">
                 Explore FacultyLens
                 <ArrowRight className="w-5 h-5" />
-              </a>
+              </button>
             </div>
           </div>
           

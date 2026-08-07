@@ -2,7 +2,7 @@ import React from 'react';
 import { Users2, Target, CalendarDays, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function StudySociusSection() {
+export default function StudySociusSection({ onAction }) {
   return (
     <section id="studysocius" className="relative py-24 bg-[#fff9f0] overflow-hidden">
       <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#fb923c 2px, transparent 2px)', backgroundSize: '20px 20px' }}></div>
@@ -49,10 +49,10 @@ export default function StudySociusSection() {
             </div>
             
             <div className="pt-6">
-              <a href="https://www.studysocius.com/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 px-8 py-4 text-white bg-orange-500 hover:bg-orange-600 rounded-2xl font-bold shadow-lg shadow-orange-500/30 transition-all hover:-translate-y-1">
+              <button onClick={onAction} className="inline-flex items-center justify-center gap-2 px-8 py-4 text-white bg-orange-500 hover:bg-orange-600 rounded-2xl font-bold shadow-lg shadow-orange-500/30 transition-all hover:-translate-y-1">
                 Join StudySocius
                 <ArrowRight className="w-5 h-5" />
-              </a>
+              </button>
             </div>
           </div>
           
