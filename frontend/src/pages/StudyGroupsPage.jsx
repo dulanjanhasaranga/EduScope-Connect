@@ -116,7 +116,7 @@ export default function StudyGroupsPage() {
       </div>
 
       {/* My Chats (WhatsApp Style) */}
-      {isAuthenticated && myGroups.length > 0 && (
+      {isAuthenticated && (
         <div className="mb-10 animate-fade-in-up">
           <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
             <MessageCircle className="w-5 h-5 text-orange-500" />
@@ -148,6 +148,11 @@ export default function StudyGroupsPage() {
                 </div>
               </div>
             ))}
+            {myGroups.length === 0 && (
+              <div className="p-8 text-center text-gray-500 bg-gray-50">
+                <p>You haven't joined any groups yet. Browse the groups below to get started!</p>
+              </div>
+            )}
           </div>
         </div>
       )}
