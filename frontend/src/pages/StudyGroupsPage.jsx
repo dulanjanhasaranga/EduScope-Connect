@@ -80,6 +80,9 @@ export default function StudyGroupsPage() {
     g.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const myGroups = filteredGroups.filter(group => group.isMember || group.ownerId === user?.id);
+  const discoverGroups = filteredGroups.filter(group => !(group.isMember || group.ownerId === user?.id));
+
   if (loading) return <LoadingSpinner size="lg" className="py-20" />;
 
   return (
@@ -112,37 +115,81 @@ export default function StudyGroupsPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredGroups.map(group => (
-          <div key={group.id} className="card hover:shadow-md transition-shadow border-t-4 border-orange-400 flex flex-col h-full">
-            <div className="flex justify-between items-start mb-3">
-              <span className="px-2.5 py-1 bg-orange-100 text-orange-700 text-xs font-bold rounded-full uppercase tracking-wider">
-                {group.category}
-              </span>
-              <span className="flex items-center gap-1 text-sm text-gray-500 font-medium">
-                <Users2 className="w-4 h-4" /> {group.memberCount}
-              </span>
-            </div>
-            
-            <h2 className="text-xl font-bold text-gray-900 mb-2">{group.name}</h2>
-            <p className="text-gray-600 mb-6 text-sm line-clamp-2 min-h-[40px] flex-grow">{group.description}</p>
-            
-            <div className="flex items-center gap-2 mt-auto">
-              <button 
-                onClick={() => handleJoinOrEnter(group)}
-                className={`flex-1 py-2 ${group.isMember || group.ownerId === user?.id ? 'btn-primary' : 'btn-secondary'}`}
+      {/* My Chats (WhatsApp Style) */}
+      {isAuthenticated && myGroups.length > 0 && (
+        <div className="mb-10 animate-fade-in-up">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <MessageCircle className="w-5 h-5 text-orange-500" />
+            My Chats
+          </h2>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden divide-y divide-gray-100">
+            {myGroups.map(group => (
+              <div 
+                key={group.id} 
+                onClick={() => navigate(`/groups/${group.id}`)}
+                className="flex items-center justify-between p-4 hover:bg-orange-50 cursor-pointer transition-colors group"
               >
-                {group.isMember || group.ownerId === user?.id ? 'Enter Chat Room' : 'Join Group'}
-              </button>
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-orange-100 to-orange-200 text-orange-700 rounded-full flex items-center justify-center font-bold text-xl shadow-inner">
+                    {group.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900 group-hover:text-orange-600 transition-colors">{group.name}</h3>
+                    <p className="text-sm text-gray-500 flex items-center gap-1 mt-0.5">
+                      <span className="inline-block w-2 h-2 rounded-full bg-green-500"></span>
+                      {group.category} • {group.memberCount} members
+                    </p>
+                  </div>
+                </div>
+                <div className="hidden sm:flex items-center">
+                   <span className="text-sm font-medium text-orange-600 bg-orange-100 px-4 py-1.5 rounded-full group-hover:bg-orange-500 group-hover:text-white transition-colors">
+                     Open Chat
+                   </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Discover Groups */}
+      <div className="animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+        <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+          <Search className="w-5 h-5 text-gray-400" />
+          Discover Groups
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {discoverGroups.map(group => (
+            <div key={group.id} className="card hover:shadow-md transition-shadow border-t-4 border-orange-400 flex flex-col h-full">
+              <div className="flex justify-between items-start mb-3">
+                <span className="px-2.5 py-1 bg-orange-100 text-orange-700 text-xs font-bold rounded-full uppercase tracking-wider">
+                  {group.category}
+                </span>
+                <span className="flex items-center gap-1 text-sm text-gray-500 font-medium">
+                  <Users2 className="w-4 h-4" /> {group.memberCount}
+                </span>
+              </div>
+              
+              <h2 className="text-xl font-bold text-gray-900 mb-2">{group.name}</h2>
+              <p className="text-gray-600 mb-6 text-sm line-clamp-2 min-h-[40px] flex-grow">{group.description}</p>
+              
+              <div className="flex items-center gap-2 mt-auto">
+                <button 
+                  onClick={() => handleJoinOrEnter(group)}
+                  className="w-full py-2 btn-secondary hover:bg-orange-50 hover:text-orange-600"
+                >
+                  Join Group
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
-        {groups.length === 0 && (
-          <div className="col-span-full p-12 text-center text-gray-500 border-2 border-dashed rounded-2xl">
-            <MessageCircle className="w-12 h-12 mx-auto text-gray-300 mb-3" />
-            <p>No study groups available yet. Be the first to create one!</p>
-          </div>
-        )}
+          ))}
+          {discoverGroups.length === 0 && (
+            <div className="col-span-full p-12 text-center text-gray-500 border-2 border-dashed rounded-2xl">
+              <Users2 className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+              <p>No new groups available to join right now.</p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Create Modal */}
