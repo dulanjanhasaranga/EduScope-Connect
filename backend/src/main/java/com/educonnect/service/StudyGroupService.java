@@ -52,6 +52,9 @@ public class StudyGroupService {
         }).collect(Collectors.toList());
     }
 
+    @Autowired
+    private org.springframework.beans.factory.ObjectProvider<com.educonnect.config.DataSeeder> dataSeederProvider;
+
     @Transactional
     public StudyGroupDTO createGroup(StudyGroupRequest request) {
         User currentUser = authService.getCurrentUser();
@@ -65,6 +68,11 @@ public class StudyGroupService {
         
         group.getMembers().add(currentUser);
         group = studyGroupRepository.save(group);
+
+        com.educonnect.config.DataSeeder seeder = dataSeederProvider.getIfAvailable();
+        if (seeder != null) {
+            seeder.seedDynamicGroupActivity(group);
+        }
 
         return StudyGroupDTO.builder()
                 .id(group.getId())

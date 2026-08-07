@@ -87,7 +87,7 @@ export default function StudyGroupDetailPage() {
         'Medicine': 'biology',
         'Mathematics': 'mathematics'
       };
-      const queryTag = tagMap[foundGroup.category] || '';
+      const queryTag = tagMap[foundGroup.category] || foundGroup.category.toLowerCase().replace(/\s+/g, '-');
       
       const qRes = await api.get(`/questions?tag=${queryTag}&size=20`);
       setRelatedQuestions(qRes.data.content || []);

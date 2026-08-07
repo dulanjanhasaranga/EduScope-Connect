@@ -92,6 +92,107 @@ public class DataSeeder implements CommandLineRunner {
                 seedNewStudentsAndActivity();
                 seedHistoricalAnswersForLeaders();
                 seedAuditLogs();
+                seedEmptyGroups();
+        }
+
+        private void seedEmptyGroups() {
+                List<com.educonnect.model.StudyGroup> groups = studyGroupRepository.findAll();
+                for (com.educonnect.model.StudyGroup group : groups) {
+                        if (groupMessageRepository.findByGroupIdOrderByCreatedAtAsc(group.getId()).isEmpty()) {
+                                seedDynamicGroupActivity(group);
+                        }
+                }
+        }
+
+        public void seedDynamicGroupActivity(com.educonnect.model.StudyGroup group) {
+                // Generate 3 mock students
+                List<User> mockStudents = new ArrayList<>();
+                String[] names = {"Alice", "Bob", "Charlie", "David", "Eve"};
+                for (int i = 0; i < 3; i++) {
+                        String name = names[new java.util.Random().nextInt(names.length)] + new java.util.Random().nextInt(1000);
+                        java.util.Optional<User> existing = userRepository.findByEmail(name.toLowerCase() + "@mock.com");
+                        User student;
+                        if (existing.isPresent()) {
+                                student = existing.get();
+                        } else {
+                                student = User.builder()
+                                        .username(name)
+                                        .email(name.toLowerCase() + "@mock.com")
+                                        .passwordHash(passwordEncoder.encode("password123"))
+                                        .role(User.Role.STUDENT)
+                                        .bio("Mock student for " + group.getName())
+                                        .avatarUrl("https://ui-avatars.com/api/?name=" + name + "&background=random")
+                                        .reputationScore(10)
+                                        .build();
+                                student = userRepository.save(student);
+                        }
+                        mockStudents.add(student);
+                        
+                        if (group.getMembers() == null) {
+                                group.setMembers(new java.util.HashSet<>());
+                        }
+                        group.getMembers().add(student);
+                }
+                studyGroupRepository.save(group);
+
+                LocalDateTime now = LocalDateTime.now();
+
+                // Generate Chat Messages
+                String[] messages = {
+                        "Hey everyone! Glad to join the group.",
+                        "Has anyone started working on the latest topics?",
+                        "Yes, I just started yesterday. It's quite interesting!",
+                        "Let me know if anyone needs help, we can study together."
+                };
+
+                for (int i = 0; i < messages.length; i++) {
+                        GroupMessage msg = GroupMessage.builder()
+                                .group(group)
+                                .author(mockStudents.get(i % mockStudents.size()))
+                                .content(messages[i])
+                                .createdAt(now.minusMinutes(30 - i * 5))
+                                .build();
+                        groupMessageRepository.save(msg);
+                }
+
+                // Generate Questions with matching Tag
+                String category = group.getCategory() != null ? group.getCategory() : "General";
+                String tagName = category.toLowerCase().replace(" ", "-");
+                Tag tag = tagRepository.findByName(tagName).orElseGet(() -> 
+                        tagRepository.save(Tag.builder().name(tagName).category(category).build())
+                );
+
+                Question q1 = Question.builder()
+                        .title("How do I get started with " + group.getName() + "?")
+                        .body("I am new to this subject and would love some recommendations on where to start.")
+                        .author(mockStudents.get(0))
+                        .voteCount(5)
+                        .createdAt(now.minusDays(1))
+                        .build();
+                q1.getTags().add(tag);
+                q1 = questionRepository.save(q1);
+
+                Answer a1 = Answer.builder()
+                        .question(q1)
+                        .author(mockStudents.get(1))
+                        .body("I recommend checking out the official documentation or some beginner tutorials online! They really helped me.")
+                        .voteCount(3)
+                        .isAccepted(true)
+                        .createdAt(now.minusHours(12))
+                        .build();
+                answerRepository.save(a1);
+
+                Question q2 = Question.builder()
+                        .title("What are the best resources for " + category + "?")
+                        .body("Can anyone share their favorite books or courses for this topic?")
+                        .author(mockStudents.get(2))
+                        .voteCount(8)
+                        .createdAt(now.minusHours(5))
+                        .build();
+                q2.getTags().add(tag);
+                questionRepository.save(q2);
+
+                System.out.println("Seeded dynamic activity for group: " + group.getName());
         }
 
         private void seedUsers() {
