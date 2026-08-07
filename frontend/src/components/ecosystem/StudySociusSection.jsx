@@ -1,8 +1,21 @@
-import React from 'react';
-import { Users2, Target, CalendarDays, ArrowRight } from 'lucide-react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { Users2, Target, CalendarDays, ArrowRight, Check } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-export default function StudySociusSection({ onAction }) {
+export default function StudySociusSection() {
+  const [tasks, setTasks] = useState([
+    { id: 1, title: 'Physics Lab Report', date: 'Oct', day: '12', due: 'Due in 2 days', completed: false, color: 'red' },
+    { id: 2, title: 'Calculus Midterm Prep', date: 'Oct', day: '15', due: 'Due in 5 days', completed: false, color: 'slate' }
+  ]);
+
+  const toggleTask = (id) => {
+    setTasks(tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
+  };
+
+  const completedCount = 2 + tasks.filter(t => t.completed).length; // 2 already completed base
+  const totalCount = 4;
+  const progressPercent = (completedCount / totalCount) * 100;
+
   return (
     <section id="studysocius" className="relative py-24 bg-[#fff9f0] overflow-hidden">
       <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#fb923c 2px, transparent 2px)', backgroundSize: '20px 20px' }}></div>
@@ -49,10 +62,10 @@ export default function StudySociusSection({ onAction }) {
             </div>
             
             <div className="pt-6">
-              <button onClick={onAction} className="inline-flex items-center justify-center gap-2 px-8 py-4 text-white bg-orange-500 hover:bg-orange-600 rounded-2xl font-bold shadow-lg shadow-orange-500/30 transition-all hover:-translate-y-1">
+              <a href="https://www.studysocius.com/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 px-8 py-4 text-white bg-orange-500 hover:bg-orange-600 rounded-2xl font-bold shadow-lg shadow-orange-500/30 transition-all hover:-translate-y-1">
                 Join StudySocius
                 <ArrowRight className="w-5 h-5" />
-              </button>
+              </a>
             </div>
           </div>
           
@@ -78,40 +91,60 @@ export default function StudySociusSection({ onAction }) {
               <div className="bg-gradient-to-r from-orange-400 to-amber-400 rounded-2xl p-6 text-white mb-8 shadow-lg">
                 <h4 className="font-bold mb-2">Weekly Goal Progress</h4>
                 <div className="flex items-end justify-between mb-2">
-                  <span className="text-3xl font-extrabold">75%</span>
-                  <span className="text-sm opacity-90">3 of 4 tasks completed</span>
+                  <span className="text-3xl font-extrabold">{progressPercent}%</span>
+                  <span className="text-sm opacity-90">{completedCount} of {totalCount} tasks completed</span>
                 </div>
                 <div className="w-full bg-black/20 rounded-full h-2">
-                  <div className="bg-white h-2 rounded-full" style={{ width: '75%' }}></div>
+                  <motion.div 
+                    className="bg-white h-2 rounded-full" 
+                    initial={false}
+                    animate={{ width: `${progressPercent}%` }}
+                    transition={{ duration: 0.5 }}
+                  ></motion.div>
                 </div>
               </div>
               
               <div className="space-y-4">
                 <h4 className="font-bold text-slate-800">Upcoming Assignments</h4>
                 
-                <div className="flex items-center gap-4 p-4 rounded-xl border border-slate-100 hover:border-orange-200 transition-colors">
-                  <div className="w-12 h-12 rounded-lg bg-red-50 text-red-500 flex flex-col items-center justify-center flex-shrink-0">
-                    <span className="text-xs font-bold uppercase">Oct</span>
-                    <span className="font-bold leading-none">12</span>
-                  </div>
-                  <div className="flex-1">
-                    <h5 className="font-bold text-slate-800">Physics Lab Report</h5>
-                    <p className="text-xs text-slate-500">Due in 2 days</p>
-                  </div>
-                  <div className="w-6 h-6 rounded-full border-2 border-slate-200"></div>
-                </div>
-                
-                <div className="flex items-center gap-4 p-4 rounded-xl border border-slate-100 hover:border-orange-200 transition-colors">
-                  <div className="w-12 h-12 rounded-lg bg-slate-50 text-slate-500 flex flex-col items-center justify-center flex-shrink-0">
-                    <span className="text-xs font-bold uppercase">Oct</span>
-                    <span className="font-bold leading-none">15</span>
-                  </div>
-                  <div className="flex-1">
-                    <h5 className="font-bold text-slate-800">Calculus Midterm Prep</h5>
-                    <p className="text-xs text-slate-500">Due in 5 days</p>
-                  </div>
-                  <div className="w-6 h-6 rounded-full border-2 border-slate-200"></div>
-                </div>
+                <AnimatePresence>
+                  {tasks.map(task => (
+                    <motion.div 
+                      key={task.id}
+                      layout
+                      onClick={() => toggleTask(task.id)}
+                      className={`flex items-center gap-4 p-4 rounded-xl border transition-all cursor-pointer ${
+                        task.completed 
+                          ? 'bg-slate-50 border-slate-200 opacity-70' 
+                          : 'border-slate-100 hover:border-orange-200'
+                      }`}
+                    >
+                      <div className={`w-12 h-12 rounded-lg flex flex-col items-center justify-center flex-shrink-0 ${
+                        task.completed ? 'bg-slate-200 text-slate-500' : `bg-${task.color}-50 text-${task.color}-500`
+                      }`}>
+                        <span className="text-xs font-bold uppercase">{task.date}</span>
+                        <span className="font-bold leading-none">{task.day}</span>
+                      </div>
+                      <div className="flex-1">
+                        <h5 className={`font-bold transition-all ${
+                          task.completed ? 'text-slate-400 line-through' : 'text-slate-800'
+                        }`}>
+                          {task.title}
+                        </h5>
+                        <p className={`text-xs ${task.completed ? 'text-slate-400' : 'text-slate-500'}`}>
+                          {task.due}
+                        </p>
+                      </div>
+                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                        task.completed 
+                          ? 'bg-orange-500 border-orange-500 text-white' 
+                          : 'border-slate-200 group-hover:border-orange-300'
+                      }`}>
+                        {task.completed && <Check className="w-3 h-3" />}
+                      </div>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
               </div>
             </motion.div>
             

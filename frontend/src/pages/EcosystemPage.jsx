@@ -1,8 +1,7 @@
 import { ArrowLeft, ArrowRight, Globe } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import React, { useEffect, useState } from "react";
-import api from "../utils/api";
-import WaitlistModal from "../components/WaitlistModal";
+import React, { useEffect } from "react";
+
 import FacultyLensSection from "../components/ecosystem/FacultyLensSection";
 import BevinzeySection from "../components/ecosystem/BevinzeySection";
 import EvalometricsSection from "../components/ecosystem/EvalometricsSection";
@@ -11,20 +10,6 @@ import RxCalculationsSection from "../components/ecosystem/RxCalculationsSection
 
 export default function EcosystemPage() {
   const location = useLocation();
-  const [ecosystemProducts, setEcosystemProducts] = useState([]);
-  const [waitlistProduct, setWaitlistProduct] = useState(null);
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await api.get('/ecosystem');
-        setEcosystemProducts(res.data);
-      } catch (err) {
-        console.error("Failed to fetch ecosystem products", err);
-      }
-    };
-    fetchProducts();
-  }, []);
 
   useEffect(() => {
     if (location.hash) {
@@ -70,11 +55,11 @@ export default function EcosystemPage() {
 
       {/* Custom Products Sections */}
       <div className="flex flex-col">
-        <FacultyLensSection onAction={() => setWaitlistProduct(ecosystemProducts.find(p => p.id === 'facultylens'))} />
-        <BevinzeySection onAction={() => setWaitlistProduct(ecosystemProducts.find(p => p.id === 'bevinzey'))} />
-        <EvalometricsSection onAction={() => setWaitlistProduct(ecosystemProducts.find(p => p.id === 'evalometrics'))} />
-        <StudySociusSection onAction={() => setWaitlistProduct(ecosystemProducts.find(p => p.id === 'studysocius'))} />
-        <RxCalculationsSection onAction={() => setWaitlistProduct(ecosystemProducts.find(p => p.id === 'rxcalculations'))} />
+        <FacultyLensSection />
+        <BevinzeySection />
+        <EvalometricsSection />
+        <StudySociusSection />
+        <RxCalculationsSection />
       </div>
 
       {/* CTA Section */}
@@ -107,12 +92,6 @@ export default function EcosystemPage() {
           </div>
         </div>
       </section>
-
-      <WaitlistModal
-        isOpen={!!waitlistProduct}
-        onClose={() => setWaitlistProduct(null)}
-        product={waitlistProduct}
-      />
     </div>
   );
 }
