@@ -6,12 +6,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useWebSocket } from '../context/WebSocketContext';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Navbar() {
   const { user, logout, isAuthenticated } = useAuth();
   const { notifications, clearNotifications } = useWebSocket();
   const navigate = useNavigate();
   const location = useLocation();
+  const [isNavigatingHome, setIsNavigatingHome] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showAppsMenu, setShowAppsMenu] = useState(false);
@@ -73,6 +75,19 @@ export default function Navbar() {
 
   const redirectToLogin = (from) => `/login?redirect=${encodeURIComponent(from || location.pathname)}`;
 
+  const handleLogoClick = (e) => {
+    e.preventDefault();
+    if (location.pathname === '/') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    setIsNavigatingHome(true);
+    setTimeout(() => {
+      navigate('/');
+      setTimeout(() => setIsNavigatingHome(false), 100);
+    }, 800);
+  };
+
   const ecosystemApps = [
     { name: 'FacultyLens', description: 'AI insights & predictive analytics', icon: BarChart3, color: 'text-blue-600', bg: 'bg-blue-100', path: '/ecosystem#facultylens' },
     { name: 'Bevinzey', description: 'Smart summarization & Q&A generation', icon: Sparkles, color: 'text-purple-600', bg: 'bg-purple-100', path: '/ecosystem#bevinzey' },
@@ -82,14 +97,55 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 transition-all shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex items-center gap-8">
-            <Link to="/" className="flex items-center gap-2 group">
-              <BookOpen className="h-8 w-8 text-primary-600 group-hover:scale-105 transition-transform" />
-              <span className="text-xl font-bold text-gray-900 tracking-tight">EduConnect</span>
-            </Link>
+    <>
+      <AnimatePresence>
+        {isNavigatingHome && (
+          <motion.div
+            initial={{ scaleY: 0, originY: 1 }}
+            animate={{ scaleY: 1 }}
+            exit={{ scaleY: 0, originY: 0 }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="fixed inset-0 bg-primary-600 z-[9999] flex flex-col items-center justify-center"
+            style={{ transformStyle: 'preserve-3d' }}
+          >
+            <motion.div
+              initial={{ scale: 0.5, opacity: 0, rotateY: 90 }}
+              animate={{ scale: 1, opacity: 1, rotateY: 0 }}
+              transition={{ delay: 0.3, duration: 0.5, type: "spring" }}
+            >
+              <BookOpen className="h-24 w-24 text-white" />
+            </motion.div>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.4 }}
+              className="text-4xl font-bold text-white mt-6 tracking-tight"
+            >
+              EduConnect
+            </motion.h1>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 transition-all shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center gap-8">
+              <Link 
+                to="/" 
+                onClick={handleLogoClick}
+                className="flex items-center gap-2 group cursor-pointer"
+              >
+                <motion.div
+                  whileHover={{ scale: 1.15, rotateY: 180 }}
+                  whileTap={{ scale: 0.9 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  style={{ transformStyle: "preserve-3d" }}
+                >
+                  <BookOpen className="h-8 w-8 text-primary-600" />
+                </motion.div>
+                <span className="text-xl font-bold text-gray-900 tracking-tight group-hover:text-primary-600 transition-colors">EduConnect</span>
+              </Link>
 
             {/* Desktop Nav Links */}
             <div className="hidden md:flex items-center gap-6 ml-4">
@@ -325,5 +381,6 @@ export default function Navbar() {
         ))}
       </div>
     </nav>
+    </>
   );
 }
