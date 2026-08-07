@@ -1,6 +1,7 @@
-import { Linkedin, Facebook, Youtube, Phone, Mail, Sparkles, Bell, Menu, Grip, Pill } from "lucide-react";
+import { Linkedin, Facebook, Youtube, Phone, Mail, Sparkles, Bell, Menu, Grip, Pill, Feather } from "lucide-react";
 import { BookOpen, User, Award, MessageCircle, HelpCircle, X, ShieldCheck, LogOut, CheckSquare, BarChart3, Users2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import AnimatedLogo from './AnimatedLogo';
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -112,8 +113,10 @@ export default function Navbar() {
               initial={{ scale: 0.5, opacity: 0, rotateY: 90 }}
               animate={{ scale: 1, opacity: 1, rotateY: 0 }}
               transition={{ delay: 0.3, duration: 0.5, type: "spring" }}
+              className="relative flex items-center justify-center"
             >
               <BookOpen className="h-24 w-24 text-white" />
+              <Feather className="h-14 w-14 text-white absolute -translate-y-3" />
             </motion.div>
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -134,17 +137,9 @@ export default function Navbar() {
               <Link 
                 to="/" 
                 onClick={handleLogoClick}
-                className="flex items-center gap-2 group cursor-pointer"
+                className="group cursor-pointer block relative z-[100]"
               >
-                <motion.div
-                  whileHover={{ scale: 1.15, rotateY: 180 }}
-                  whileTap={{ scale: 0.9 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  style={{ transformStyle: "preserve-3d" }}
-                >
-                  <BookOpen className="h-8 w-8 text-primary-600" />
-                </motion.div>
-                <span className="text-xl font-bold text-gray-900 tracking-tight group-hover:text-primary-600 transition-colors">EduConnect</span>
+                <AnimatedLogo />
               </Link>
 
             {/* Desktop Nav Links */}
