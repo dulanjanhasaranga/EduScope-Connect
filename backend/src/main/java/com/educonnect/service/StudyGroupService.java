@@ -66,6 +66,9 @@ public class StudyGroupService {
                 .owner(currentUser)
                 .build();
         
+        if (group.getMembers() == null) {
+            group.setMembers(new java.util.HashSet<>());
+        }
         group.getMembers().add(currentUser);
         group = studyGroupRepository.save(group);
 

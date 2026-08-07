@@ -41,6 +41,7 @@ public class StudyGroup {
             joinColumns = @JoinColumn(name = "group_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
+    @Builder.Default
     private java.util.Set<User> members = new java.util.HashSet<>();
 
     @PrePersist
