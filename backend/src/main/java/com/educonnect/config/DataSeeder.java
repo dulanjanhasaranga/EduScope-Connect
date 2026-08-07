@@ -11,6 +11,7 @@ import com.educonnect.repository.UserRepository;
 import com.educonnect.repository.AuditLogRepository;
 import com.educonnect.repository.SystemSettingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -41,6 +42,9 @@ import java.util.Set;
 @Transactional
 @Profile("!prod")
 public class DataSeeder implements CommandLineRunner {
+
+        @Value("${app.features.enable-seeder:false}")
+        private boolean enableSeeder;
 
         @Autowired
         private EcosystemProductRepository ecosystemProductRepository;
@@ -83,6 +87,11 @@ public class DataSeeder implements CommandLineRunner {
 
         @Override
         public void run(String... args) throws Exception {
+                if (!enableSeeder) {
+                        System.out.println("Data Seeder is disabled in application properties. Skipping DB seeding.");
+                        return;
+                }
+
                 seedSystemSettings();
                 seedUsers();
                 seedEcosystemProducts();

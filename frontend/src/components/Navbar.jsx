@@ -78,10 +78,17 @@ export default function Navbar() {
 
   const handleLogoClick = (e) => {
     e.preventDefault();
+    if (isNavigatingHome) return; // Prevent spam clicking
+
     if (location.pathname === '/') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-      navigate('/');
+      setIsNavigatingHome(true);
+      // Play the logo transition animation for 800ms before actually navigating
+      setTimeout(() => {
+        navigate('/');
+        setIsNavigatingHome(false);
+      }, 800);
     }
   };
 
@@ -104,7 +111,7 @@ export default function Navbar() {
                 onClick={handleLogoClick}
                 className="group cursor-pointer block relative z-[100]"
               >
-                <AnimatedLogo />
+                <AnimatedLogo isNavigating={isNavigatingHome} />
               </Link>
 
             {/* Desktop Nav Links */}
@@ -199,7 +206,7 @@ export default function Navbar() {
                         </button>
                       </div>
                       {notifications.length === 0 ? (
-                        <p className="px-4 py-3 text-gray-500 text-sm">No notifications</p>
+                       <p className="px-4 py-3 text-gray-500 text-sm">No notifications</p>
                       ) : (
                         notifications.map((n, i) => (
                           <div key={i} className="px-4 py-2 hover:bg-gray-50 text-sm">

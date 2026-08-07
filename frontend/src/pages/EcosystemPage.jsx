@@ -1,18 +1,37 @@
 import { ArrowLeft, ArrowRight, Globe } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import api from "../utils/api";
 
 import FacultyLensSection from "../components/ecosystem/FacultyLensSection";
 import BevinzeySection from "../components/ecosystem/BevinzeySection";
 import EvalometricsSection from "../components/ecosystem/EvalometricsSection";
 import StudySociusSection from "../components/ecosystem/StudySociusSection";
 import RxCalculationsSection from "../components/ecosystem/RxCalculationsSection";
+import GenericEcosystemSection from "../components/ecosystem/GenericEcosystemSection";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function EcosystemPage() {
   const location = useLocation();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (location.hash) {
+    const fetchProducts = async () => {
+      try {
+        const res = await api.get('/ecosystem?t=' + Date.now());
+        setProducts(res.data);
+      } catch (err) {
+        console.error("Failed to fetch ecosystem products:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  useEffect(() => {
+    if (!loading && location.hash) {
       const timer = setTimeout(() => {
         const id = location.hash.replace('#', '');
         const element = document.getElementById(id);
@@ -22,7 +41,34 @@ export default function EcosystemPage() {
       }, 400);
       return () => clearTimeout(timer);
     }
-  }, [location.hash]);
+  }, [location.hash, loading]);
+
+  const renderSection = (product, index) => {
+    // If it's one of the core bespoke products, use the custom component
+    // If we want them to use dynamic data in the future, we could pass `product={product}`
+    // But for now, we just route to the right component.
+    const isReverse = index % 2 !== 0;
+
+    switch (product.id) {
+      case 'facultylens':
+        return <FacultyLensSection key={product.id} />;
+      case 'bevinzey':
+        return <BevinzeySection key={product.id} />;
+      case 'evalometrics':
+        return <EvalometricsSection key={product.id} />;
+      case 'studysocius':
+        return <StudySociusSection key={product.id} />;
+      case 'rxcalculations':
+        return <RxCalculationsSection key={product.id} />;
+      default:
+        // Use generic component for any products dynamically added via DB/Admin
+        return <GenericEcosystemSection key={product.id} product={product} reverse={isReverse} />;
+    }
+  };
+
+  if (loading) {
+    return <LoadingSpinner size="lg" className="py-20" />;
+  }
 
   return (
     <div className="space-y-0">
@@ -53,13 +99,9 @@ export default function EcosystemPage() {
         </p>
       </div>
 
-      {/* Custom Products Sections */}
+      {/* Dynamic Products Sections */}
       <div className="flex flex-col">
-        <FacultyLensSection />
-        <BevinzeySection />
-        <EvalometricsSection />
-        <StudySociusSection />
-        <RxCalculationsSection />
+        {products.map((product, index) => renderSection(product, index))}
       </div>
 
       {/* CTA Section */}
