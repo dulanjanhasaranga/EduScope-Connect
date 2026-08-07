@@ -20,7 +20,11 @@ export default function AnimatedLogo() {
   }, []);
 
   return (
-    <div className="flex items-center">
+    <motion.div 
+      className="flex items-center group"
+      whileHover="hover"
+      whileTap="tap"
+    >
       <motion.div 
         className="relative flex items-center justify-center flex-shrink-0"
         initial={isInitialLoad ? { scale: 2, x: 40 } : { scale: 1, x: 0 }}
@@ -30,17 +34,30 @@ export default function AnimatedLogo() {
         } : { scale: 1, x: 0 }}
         transition={isInitialLoad ? { 
           duration: 4, 
-          times: [0, 0.6, 1], // Stays big/cropped for 60% of the 4 seconds (2.4s), then scales down
+          times: [0, 0.6, 1],
           ease: "easeInOut" 
         } : { duration: 0.3 }}
+        variants={{
+          hover: { scale: 1.15, rotateY: 180, transition: { type: "spring", stiffness: 300, damping: 20 } },
+          tap: { scale: 0.9 }
+        }}
+        style={{ transformStyle: "preserve-3d" }}
       >
         {/* The Book & Feather combo representing "EDUCATION CREATIVE" */}
-        <BookOpen className="h-8 w-8 text-[#8b6f52]" />
-        <Feather className="h-5 w-5 text-[#cda77b] absolute -translate-y-1.5" />
+        <BookOpen className="h-8 w-8 text-[#8b6f52] transition-colors duration-300" />
+        <motion.div 
+          className="absolute -translate-y-1.5"
+          variants={{
+            hover: { y: -8, rotateZ: 15, scale: 1.2 }
+          }}
+          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+        >
+          <Feather className="h-5 w-5 text-[#cda77b] transition-colors duration-300" />
+        </motion.div>
       </motion.div>
 
       <motion.span 
-        className="text-xl font-bold text-gray-900 tracking-tight ml-2 overflow-hidden whitespace-nowrap"
+        className="text-xl font-bold text-gray-900 tracking-tight ml-2 overflow-hidden whitespace-nowrap transition-colors duration-300 group-hover:text-primary-600"
         initial={isInitialLoad ? { opacity: 0, width: 0 } : { opacity: 1, width: 'auto' }}
         animate={isInitialLoad ? { 
           opacity: [0, 0, 1], 
@@ -48,12 +65,12 @@ export default function AnimatedLogo() {
         } : { opacity: 1, width: 'auto' }}
         transition={isInitialLoad ? { 
           duration: 4, 
-          times: [0, 0.7, 1], // Text stays hidden until the logo starts moving back
+          times: [0, 0.7, 1], 
           ease: "easeInOut" 
         } : { duration: 0.3 }}
       >
         EduConnect
       </motion.span>
-    </div>
+    </motion.div>
   );
 }

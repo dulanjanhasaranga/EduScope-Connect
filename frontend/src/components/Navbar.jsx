@@ -80,13 +80,9 @@ export default function Navbar() {
     e.preventDefault();
     if (location.pathname === '/') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
-    }
-    setIsNavigatingHome(true);
-    setTimeout(() => {
+    } else {
       navigate('/');
-      setTimeout(() => setIsNavigatingHome(false), 100);
-    }, 800);
+    }
   };
 
   const ecosystemApps = [
@@ -99,37 +95,6 @@ export default function Navbar() {
 
   return (
     <>
-      <AnimatePresence>
-        {isNavigatingHome && (
-          <motion.div
-            initial={{ scaleY: 0, originY: 1 }}
-            animate={{ scaleY: 1 }}
-            exit={{ scaleY: 0, originY: 0 }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed inset-0 bg-primary-600 z-[9999] flex flex-col items-center justify-center"
-            style={{ transformStyle: 'preserve-3d' }}
-          >
-            <motion.div
-              initial={{ scale: 0.5, opacity: 0, rotateY: 90 }}
-              animate={{ scale: 1, opacity: 1, rotateY: 0 }}
-              transition={{ delay: 0.3, duration: 0.5, type: "spring" }}
-              className="relative flex items-center justify-center"
-            >
-              <BookOpen className="h-24 w-24 text-white" />
-              <Feather className="h-14 w-14 text-white absolute -translate-y-3" />
-            </motion.div>
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.4 }}
-              className="text-4xl font-bold text-white mt-6 tracking-tight"
-            >
-              EduConnect
-            </motion.h1>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 transition-all shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
