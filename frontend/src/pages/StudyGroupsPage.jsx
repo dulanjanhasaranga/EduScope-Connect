@@ -60,7 +60,7 @@ export default function StudyGroupsPage() {
       return;
     }
 
-    if (group.isMember || group.ownerId === user?.id) {
+    if (group.member || group.ownerId === user?.id) {
       navigate(`/groups/${group.id}`);
       return;
     }
@@ -80,7 +80,7 @@ export default function StudyGroupsPage() {
     g.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const myGroups = filteredGroups.filter(group => group.isMember || group.ownerId === user?.id);
+  const myGroups = filteredGroups.filter(group => group.member || group.ownerId === user?.id);
   const discoverGroups = filteredGroups; // The user requested all groups remain visible in Discover section
 
   if (loading) return <LoadingSpinner size="lg" className="py-20" />;
@@ -179,7 +179,7 @@ export default function StudyGroupsPage() {
               <p className="text-gray-600 mb-6 text-sm line-clamp-2 min-h-[40px] flex-grow">{group.description}</p>
               
               <div className="flex items-center gap-2 mt-auto">
-                {group.isMember || group.ownerId === user?.id ? (
+                {group.member || group.ownerId === user?.id ? (
                   <button 
                     onClick={() => handleJoinOrEnter(group)}
                     className="w-full py-2 bg-green-50 text-green-700 font-bold rounded-lg hover:bg-green-100 transition-colors"

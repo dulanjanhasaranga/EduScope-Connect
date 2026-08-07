@@ -92,7 +92,7 @@ export default function StudyGroupDetailPage() {
       const qRes = await api.get(`/questions?tag=${queryTag}&size=20`);
       setRelatedQuestions(qRes.data.content || []);
       
-      if (foundGroup.isMember || foundGroup.ownerId === user?.id) {
+      if (foundGroup.member || foundGroup.ownerId === user?.id) {
         connectWebSocket(groupId);
       }
     } catch (err) {
@@ -183,7 +183,7 @@ export default function StudyGroupDetailPage() {
     g.name.toLowerCase().includes(sidebarSearch.toLowerCase()) || 
     g.category.toLowerCase().includes(sidebarSearch.toLowerCase())
   );
-  const mySidebarGroups = filteredSidebarGroups.filter(g => g.isMember || g.ownerId === user?.id);
+  const mySidebarGroups = filteredSidebarGroups.filter(g => g.member || g.ownerId === user?.id);
   const discoverSidebarGroups = filteredSidebarGroups; // User requested Discover to show all groups with updated buttons
   
   const activeSidebarList = sidebarTab === 'chats' ? mySidebarGroups : discoverSidebarGroups;
@@ -265,7 +265,7 @@ export default function StudyGroupDetailPage() {
                   </div>
                 </div>
                 {sidebarTab === 'discover' && (
-                  g.isMember || g.ownerId === user?.id ? (
+                  g.member || g.ownerId === user?.id ? (
                     <button 
                       onClick={(e) => { e.stopPropagation(); navigate(`/groups/${g.id}`); setSidebarTab('chats'); }}
                       className="ml-2 px-3 py-1 bg-green-50 text-green-700 text-xs font-semibold rounded-lg shrink-0"
@@ -311,7 +311,7 @@ export default function StudyGroupDetailPage() {
                 </div>
               </div>
               
-              {group.isMember || group.ownerId === user?.id ? (
+              {group.member || group.ownerId === user?.id ? (
                 <button 
                   onClick={handleLeaveGroup}
                   className="hidden sm:flex items-center gap-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors text-xs font-semibold uppercase tracking-wider"
@@ -350,7 +350,7 @@ export default function StudyGroupDetailPage() {
 
             {/* Chat Content Area */}
             <div className="flex-1 bg-gray-50 overflow-y-auto p-4 space-y-4 relative">
-              {!(group.isMember || group.ownerId === user?.id) ? (
+              {!(group.member || group.ownerId === user?.id) ? (
                  <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center">
                    <div className="bg-white p-6 rounded-2xl shadow-xl text-center max-w-sm border border-gray-100">
                      <Users className="w-12 h-12 text-gray-300 mx-auto mb-3" />
@@ -409,7 +409,7 @@ export default function StudyGroupDetailPage() {
             </div>
 
             {/* Chat Input */}
-            {activeTab === 'chat' && (group.isMember || group.ownerId === user?.id) && (
+            {activeTab === 'chat' && (group.member || group.ownerId === user?.id) && (
               <div className="p-3 bg-gray-50 border-t shrink-0 rounded-b-2xl">
                 <form onSubmit={handleSendMessage} className="relative flex items-center gap-2">
                   <input
